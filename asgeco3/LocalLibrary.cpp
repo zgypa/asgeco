@@ -25,6 +25,6 @@ void blink(uint8_t pin, uint8_t times, uint16_t ms) {
     digitalWrite(pin, HIGH); 
     delay(ms >> 1);               
     digitalWrite(pin, LOW);  
-    delay(ms >> 1);              
+    delay(ms >> 1);
   }
 }

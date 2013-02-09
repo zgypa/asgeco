@@ -34,7 +34,7 @@
 /// @see	ReadMe.txt for references
 /// @n
 ///
-
+#define ARDUINO 103
 
 // Core library for code-sense
 #if defined(WIRING) // Wiring specific
@@ -99,5 +99,6 @@ void setup() {
 // Add loop code 
 void loop() {
   blink(myLED, 3, 333);
-  delay(1000);    
+  delay(1000);
+
 }
