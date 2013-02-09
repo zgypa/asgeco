@@ -1,0 +1,12 @@
+	
+	embedXcode
+	----------------------------------
+	Embedded Computing on Xcode 4
+
+
+	© Rei VILO, 2010-2013
+	CC = BY NC SA	
+	http://embedXcode.weebly.com/
+	
+	
+embedXcode • Feb 02, 2013 release 27 • Support for Teensyduino release 1.0
