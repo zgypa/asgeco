@@ -1,5 +1,5 @@
 ///
-/// @file	LocalLibrary.h 
+/// @file	Asgeco2API.h 
 /// @brief	Library header
 /// @details	<#details#>
 /// @n	
@@ -8,7 +8,7 @@
 /// 
 /// @author	Antonio Magni
 /// @author	Antonio Magni
-/// @date	09/02/13 18:40
+/// @date	10/02/13 11:50
 /// @version	<#version#>
 /// 
 /// @copyright	© Antonio Magni, 2013
@@ -20,19 +20,18 @@
 
 // Core library - IDE-based
 #include "Arduino.h"
+#include "EthernetClient.h"
+
+#define ASGECO "ASGECOv2"
+#define BUFSIZ 100  //Buffer size for getting data
 
 
-#ifndef asgeco3_LocalLibrary_h
-#define asgeco3_LocalLibrary_h
+#ifndef Asgeco2API_h
+#define Asgeco2API_h
 
-///
-/// @brief	Log a string
-/// @details	The passed string is logged
-/// @n		Total cycle duration = ms
-/// @param	pin pin to which the LED is attached
-/// @param	times number of times
-/// @param	ms cycle duration in ms
-///
-void logg(String string);
+void printState(EthernetClient ec);
+void writeStates(char clientline[]);
+void setUpAPI();
+void HTTPserver();
 
 #endif

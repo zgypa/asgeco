@@ -44,7 +44,7 @@
 
 # List Arduino/chipKIT/Energia/Maple/Teensy/Wiring libraries here 
 #
-APP_LIBS_LIST =
+APP_LIBS_LIST = EEPROM Ethernet Ethernet/utility SPI 
 
 # List the libraries to be excluded
 # For example, WiFi may crash on Arduino 1.0.2
@@ -56,7 +56,7 @@ EXCLUDE_LIBS = Firmata WiFi Esplora OneWire
 
 # List users libraries here 
 #
-USER_LIBS_LIST =
+USER_LIBS_LIST = Syslog EEPROMAnything
 
 
 MAKEFILE_PATH  = $(CURDIR)/Makefiles

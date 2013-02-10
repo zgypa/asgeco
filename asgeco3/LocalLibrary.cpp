@@ -17,14 +17,10 @@
 // See LocalLibrary.cpp.h and ReadMe.txt for references
 //
 
-
+#include "Asgeco2API.h"
 #include "LocalLibrary.h"
+#include "Syslog.h"
 
-void blink(uint8_t pin, uint8_t times, uint16_t ms) {
-  for (uint8_t i=0; i<times; i++) {
-    digitalWrite(pin, HIGH); 
-    delay(ms >> 1);               
-    digitalWrite(pin, LOW);  
-    delay(ms >> 1);
-  }
+void logg(String string) {
+    Syslog.logger(1,6,ASGECO,string);
 }
