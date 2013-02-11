@@ -48,11 +48,11 @@ void printState(EthernetClient ec) {
     ec.print(c);
     ec.print(bitRead(PORTB,mains1RelayPin-8), DEC);//5
     ec.print(c);
-    ec.print(digitalRead(inputPin), DEC);//6
+    ec.print(digitalRead(auxPin), DEC);//6
     ec.print(c);
-//    ec.print(readBatt());//7
+    ec.print(readBatt());//7
     ec.print(c);
-//    ec.print(readVcc());//8
+    ec.print(readVcc());//8
     ec.print(c);
     ec.print(analogRead(starterCurrentPin)) ;//9
     ec.print(c);
@@ -158,7 +158,7 @@ void HTTPserver() {
 
 void writeStates(char clientline[]){
     char * pch;
-    char FS[] = "=;";
+    char FS[] = "=&";
     char web[] = "web: ";
     
     pch = strtok(clientline, FS);
@@ -168,7 +168,7 @@ void writeStates(char clientline[]){
             case 2:
                 pch = strtok (NULL, FS);
                 logg("web:STARTER=" + String(atoi(pch)));
-//                setStarter(atoi(pch));
+                setStarter(atoi(pch));
                 break;
             case 3:
                 pch = strtok (NULL, FS);
@@ -183,27 +183,27 @@ void writeStates(char clientline[]){
             case 5:
                 pch = strtok (NULL, FS);
                 logg("web:MAINS=" + String(atoi(pch)));
-//                setMains(atoi(pch));
+                setMains(atoi(pch));
                 break;
             case 14:
                 pch = strtok (NULL, FS);
-                logg("web:AUXDIS=" + String(atoi(pch)));
-//                setState(AUXDISABLE, atoi(pch));
+                logg("web:MAN_EN=" + String(atoi(pch)));
+                setState(MANU_ENABLE, atoi(pch));
                 break;
             case 15:
                 pch = strtok (NULL, FS);
                 logg("web:FATAL=" + String(atoi(pch)));
-//                setState(FATAL, atoi(pch));
+                setState(FATAL, atoi(pch));
                 break;
             case 16:
                 pch = strtok (NULL, FS);
-                logg("web:LASTAUX=" + String(atoi(pch)));
-//                setState(LASTAUXSTATE, atoi(pch));
+                logg("web:MANU_CONTROL=" + String(atoi(pch)));
+                setState(MANU_CONTROL, atoi(pch));
                 break;
             case 17:
                 pch = strtok (NULL, FS);
-                logg("web:AUTO=" + String(atoi(pch)));
-//                setState(AUTO, atoi(pch));
+                logg("web:AUTO_ENABLE=" + String(atoi(pch)));
+                setState(AUTO_ENABLE, atoi(pch));
                 break;
             case 18:
                 pch = strtok (NULL, FS);
@@ -213,34 +213,32 @@ void writeStates(char clientline[]){
             case 19:
                 pch = strtok (NULL, FS);
                 logg("web:SECS_TOT=" + String(atoi(pch)));
-//                setTotalRunSecs(long(atoi(pch)));
+                setTotalRunSecs(long(atoi(pch)));
                 break;
             case 21:
                 pch = strtok (NULL, FS);
                 logg("web:GENON=" + String(atoi(pch)));
-//                setGENON(atoi(pch));
-                //        GENON = atoi(pch);
+                setGENON(atoi(pch));
                 break;
             case 22:
                 pch = strtok (NULL, FS);
                 logg("web:GENOFF=" + String(atoi(pch)));
-//                setGENOFF(atoi(pch));
-                //        GENOFF = atoi(pch);
+                setGENOFF(atoi(pch));
                 break;
             case 23:
                 pch = strtok (NULL, FS);
                 logg("web:REM_EN=" + String(atoi(pch)));
-//                setState(REMOTE_ENABLE, atoi(pch));
+                setState(REMOTE_ENABLE, atoi(pch));
                 break;
             case 24:
                 pch = strtok (NULL, FS);
                 logg("web:REM_CTRL=" + String(atoi(pch)));
-//                setState(REMOTE_CONTROL, atoi(pch));
+                setState(REMOTE_CONTROL, atoi(pch));
                 break;
             case 25:
                 pch = strtok (NULL, FS);
                 logg("web:VBATT=" + String(atoi(pch)));
-//                setBatt(atoi(pch));
+                setBatt(atoi(pch));
                 break;
         }
         pch = strtok (NULL, FS);

@@ -36,7 +36,7 @@
  */
 #define unusedPin          0 // free
 #define usEchoPin          1
-#define inputPin           2 //
+#define auxPin             2 //
 #define starterPin         3 //s
 #define onSolenoidPin      5 //n
 #define offSolenoidPin     6 //f
@@ -77,7 +77,7 @@
 
 
 boolean getState(byte b);
-void setState(byte b, boolean s);
+void setState(byte b, byte s);
 
 byte getStarter();
 void setStarter(byte i);
@@ -113,6 +113,17 @@ void setGENON(int g);
 int getGENOFF();
 void setGENOFF(int g);
 
+byte getInputPin(byte pin);
+
+void openFuelValve();
+void closeFuelValve();
+
+float readVpin();
+
+void setUpPinMode();
+
 void updateStates();
+
+void Generator();
 
 #endif

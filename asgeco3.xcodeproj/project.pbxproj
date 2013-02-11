@@ -120,12 +120,6 @@
 		90536A1816C6C1710050744E /* WMath.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 90536A1716C6C1710050744E /* WMath.cpp */; };
 		90536A1B16C6C1710050744E /* WString.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 90536A1A16C6C1710050744E /* WString.cpp */; };
 		90536A1F16C6C1710050744E /* EEPROM.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 90536A1E16C6C1710050744E /* EEPROM.cpp */; };
-		90536A2316C6C1710050744E /* Client.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 90536A2216C6C1710050744E /* Client.cpp */; };
-		90536A2616C6C1710050744E /* Ethernet.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 90536A2516C6C1710050744E /* Ethernet.cpp */; };
-		90536A2916C6C1710050744E /* Server.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 90536A2816C6C1710050744E /* Server.cpp */; };
-		90536A2C16C6C1710050744E /* Udp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 90536A2B16C6C1710050744E /* Udp.cpp */; };
-		90536A3016C6C1710050744E /* socket.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 90536A2F16C6C1710050744E /* socket.cpp */; };
-		90536A3316C6C1710050744E /* w5100.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 90536A3216C6C1710050744E /* w5100.cpp */; };
 		90536A3816C6C1710050744E /* Firmata.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 90536A3716C6C1710050744E /* Firmata.cpp */; };
 		90536A3C16C6C1710050744E /* Matrix.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 90536A3B16C6C1710050744E /* Matrix.cpp */; };
 		90536A4016C6C1710050744E /* Servo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 90536A3F16C6C1710050744E /* Servo.cpp */; };
@@ -546,12 +540,6 @@
 		90536F9816C6C2B10050744E /* SdFatUtil.h in Sources */ = {isa = PBXBuildFile; fileRef = 9053697F16C6C1710050744E /* SdFatUtil.h */; };
 		90536F9916C6C2B10050744E /* SdInfo.h in Sources */ = {isa = PBXBuildFile; fileRef = 9053698016C6C1710050744E /* SdInfo.h */; };
 		90536F9A16C6C2B10050744E /* EEPROM.h in Sources */ = {isa = PBXBuildFile; fileRef = 90536A2016C6C1710050744E /* EEPROM.h */; };
-		90536F9B16C6C2B10050744E /* Client.h in Sources */ = {isa = PBXBuildFile; fileRef = 90536A2416C6C1710050744E /* Client.h */; };
-		90536F9C16C6C2B10050744E /* Ethernet.h in Sources */ = {isa = PBXBuildFile; fileRef = 90536A2716C6C1710050744E /* Ethernet.h */; };
-		90536F9D16C6C2B10050744E /* Server.h in Sources */ = {isa = PBXBuildFile; fileRef = 90536A2A16C6C1710050744E /* Server.h */; };
-		90536F9E16C6C2B10050744E /* Udp.h in Sources */ = {isa = PBXBuildFile; fileRef = 90536A2D16C6C1710050744E /* Udp.h */; };
-		90536F9F16C6C2B10050744E /* socket.h in Sources */ = {isa = PBXBuildFile; fileRef = 90536A3116C6C1710050744E /* socket.h */; };
-		90536FA016C6C2B10050744E /* w5100.h in Sources */ = {isa = PBXBuildFile; fileRef = 90536A3416C6C1710050744E /* w5100.h */; };
 		90536FA116C6C2B10050744E /* Boards.h in Sources */ = {isa = PBXBuildFile; fileRef = 90536A3616C6C1710050744E /* Boards.h */; };
 		90536FA216C6C2B10050744E /* Firmata.h in Sources */ = {isa = PBXBuildFile; fileRef = 90536A3916C6C1710050744E /* Firmata.h */; };
 		90536FA316C6C2B10050744E /* SPI.h in Sources */ = {isa = PBXBuildFile; fileRef = 90536A4916C6C1710050744E /* SPI.h */; };
@@ -1142,18 +1130,6 @@
 		90536A1C16C6C1710050744E /* WString.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = WString.h; path = Arduino/cores/arduino/WString.h; sourceTree = "<group>"; };
 		90536A1E16C6C1710050744E /* EEPROM.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = EEPROM.cpp; path = Arduino/libraries/EEPROM/EEPROM.cpp; sourceTree = "<group>"; };
 		90536A2016C6C1710050744E /* EEPROM.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = EEPROM.h; path = Arduino/libraries/EEPROM/EEPROM.h; sourceTree = "<group>"; };
-		90536A2216C6C1710050744E /* Client.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = Client.cpp; path = Arduino/libraries/Ethernet/Client.cpp; sourceTree = "<group>"; };
-		90536A2416C6C1710050744E /* Client.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Client.h; path = Arduino/libraries/Ethernet/Client.h; sourceTree = "<group>"; };
-		90536A2516C6C1710050744E /* Ethernet.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = Ethernet.cpp; path = Arduino/libraries/Ethernet/Ethernet.cpp; sourceTree = "<group>"; };
-		90536A2716C6C1710050744E /* Ethernet.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Ethernet.h; path = Arduino/libraries/Ethernet/Ethernet.h; sourceTree = "<group>"; };
-		90536A2816C6C1710050744E /* Server.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = Server.cpp; path = Arduino/libraries/Ethernet/Server.cpp; sourceTree = "<group>"; };
-		90536A2A16C6C1710050744E /* Server.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Server.h; path = Arduino/libraries/Ethernet/Server.h; sourceTree = "<group>"; };
-		90536A2B16C6C1710050744E /* Udp.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = Udp.cpp; path = Arduino/libraries/Ethernet/Udp.cpp; sourceTree = "<group>"; };
-		90536A2D16C6C1710050744E /* Udp.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Udp.h; path = Arduino/libraries/Ethernet/Udp.h; sourceTree = "<group>"; };
-		90536A2F16C6C1710050744E /* socket.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = socket.cpp; path = Arduino/libraries/Ethernet/utility/socket.cpp; sourceTree = "<group>"; };
-		90536A3116C6C1710050744E /* socket.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = socket.h; path = Arduino/libraries/Ethernet/utility/socket.h; sourceTree = "<group>"; };
-		90536A3216C6C1710050744E /* w5100.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = w5100.cpp; path = Arduino/libraries/Ethernet/utility/w5100.cpp; sourceTree = "<group>"; };
-		90536A3416C6C1710050744E /* w5100.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = w5100.h; path = Arduino/libraries/Ethernet/utility/w5100.h; sourceTree = "<group>"; };
 		90536A3616C6C1710050744E /* Boards.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Boards.h; path = Arduino/libraries/Firmata/Boards.h; sourceTree = "<group>"; };
 		90536A3716C6C1710050744E /* Firmata.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = Firmata.cpp; path = Arduino/libraries/Firmata/Firmata.cpp; sourceTree = "<group>"; };
 		90536A3916C6C1710050744E /* Firmata.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Firmata.h; path = Arduino/libraries/Firmata/Firmata.h; sourceTree = "<group>"; };
@@ -2119,7 +2095,6 @@
 				9053697516C6C1710050744E /* LiquidCrystal */,
 				9053697716C6C1710050744E /* SD */,
 				90536A1D16C6C1710050744E /* EEPROM */,
-				90536A2116C6C1710050744E /* Ethernet */,
 				90536A3516C6C1710050744E /* Firmata */,
 				90536A3A16C6C1710050744E /* Matrix */,
 				90536A3E16C6C1710050744E /* Servo */,
@@ -2439,33 +2414,6 @@
 				90536A2016C6C1710050744E /* EEPROM.h */,
 			);
 			name = EEPROM;
-			sourceTree = "<group>";
-		};
-		90536A2116C6C1710050744E /* Ethernet */ = {
-			isa = PBXGroup;
-			children = (
-				90536A2216C6C1710050744E /* Client.cpp */,
-				90536A2416C6C1710050744E /* Client.h */,
-				90536A2516C6C1710050744E /* Ethernet.cpp */,
-				90536A2716C6C1710050744E /* Ethernet.h */,
-				90536A2816C6C1710050744E /* Server.cpp */,
-				90536A2A16C6C1710050744E /* Server.h */,
-				90536A2B16C6C1710050744E /* Udp.cpp */,
-				90536A2D16C6C1710050744E /* Udp.h */,
-				90536A2E16C6C1710050744E /* utility */,
-			);
-			name = Ethernet;
-			sourceTree = "<group>";
-		};
-		90536A2E16C6C1710050744E /* utility */ = {
-			isa = PBXGroup;
-			children = (
-				90536A2F16C6C1710050744E /* socket.cpp */,
-				90536A3116C6C1710050744E /* socket.h */,
-				90536A3216C6C1710050744E /* w5100.cpp */,
-				90536A3416C6C1710050744E /* w5100.h */,
-			);
-			name = utility;
 			sourceTree = "<group>";
 		};
 		90536A3516C6C1710050744E /* Firmata */ = {
@@ -4357,7 +4305,7 @@
 		9053688116C6C1700050744E /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0450;
+				LastUpgradeCheck = 0460;
 				ORGANIZATIONNAME = "Antonio Magni";
 			};
 			buildConfigurationList = 9053688416C6C1700050744E /* Build configuration list for PBXProject "asgeco3" */;
@@ -4514,12 +4462,6 @@
 				90536F9816C6C2B10050744E /* SdFatUtil.h in Sources */,
 				90536F9916C6C2B10050744E /* SdInfo.h in Sources */,
 				90536F9A16C6C2B10050744E /* EEPROM.h in Sources */,
-				90536F9B16C6C2B10050744E /* Client.h in Sources */,
-				90536F9C16C6C2B10050744E /* Ethernet.h in Sources */,
-				90536F9D16C6C2B10050744E /* Server.h in Sources */,
-				90536F9E16C6C2B10050744E /* Udp.h in Sources */,
-				90536F9F16C6C2B10050744E /* socket.h in Sources */,
-				90536FA016C6C2B10050744E /* w5100.h in Sources */,
 				90536FA116C6C2B10050744E /* Boards.h in Sources */,
 				90536FA216C6C2B10050744E /* Firmata.h in Sources */,
 				90536FA316C6C2B10050744E /* SPI.h in Sources */,
@@ -4969,12 +4911,6 @@
 				90536A1816C6C1710050744E /* WMath.cpp in Sources */,
 				90536A1B16C6C1710050744E /* WString.cpp in Sources */,
 				90536A1F16C6C1710050744E /* EEPROM.cpp in Sources */,
-				90536A2316C6C1710050744E /* Client.cpp in Sources */,
-				90536A2616C6C1710050744E /* Ethernet.cpp in Sources */,
-				90536A2916C6C1710050744E /* Server.cpp in Sources */,
-				90536A2C16C6C1710050744E /* Udp.cpp in Sources */,
-				90536A3016C6C1710050744E /* socket.cpp in Sources */,
-				90536A3316C6C1710050744E /* w5100.cpp in Sources */,
 				90536A3816C6C1710050744E /* Firmata.cpp in Sources */,
 				90536A3C16C6C1710050744E /* Matrix.cpp in Sources */,
 				90536A4016C6C1710050744E /* Servo.cpp in Sources */,
