@@ -391,86 +391,238 @@ void updateStates(){
 
 /*
  Engine not running, no request to start. No Timeouts.
- */
-byte isState0(){
-    return ((engineState & (compl ES_ALL_REQ_ENABLED)) == 0) && ! isValidRequest();
-}
-
-/*
- Engine not running, request for manual start, no timeouts.
-
- NOTting the auto and remt bits will set them to 0, hence allowing them to be ignored.
- */
-byte isState1(){
-    return ((engineState & (compl ES_REQ_NOT_MANU)) == ES_REQ_MANU);
-}
-
-/*
- Like state 1, but remote request.
- */
-byte isState2(){
-    return ((engineState & (compl ES_REQ_NOT_REMT)) == ES_REQ_REMT);
-}
-
-/*
- Like state 1, but automatic request.
- */
-byte isState3(){
-    return ((engineState & (compl ES_REQ_NOT_AUTO)) == ES_REQ_AUTO);
-}
-
-/*
- A request with only valve open in this state.
- */
-byte isState4(){
-    return (isValidRequest() && ((engineState & (compl ES_ALL_REQ_ENABLED)) == ES_VALVE_OPEN));
-}
-
-/*
-  A request with starter running. All else ignored.
- */
-byte isState5(){
-    return((isValidRequest() & getState(STARTER)) == ON);
-}
-
-/*
- No request with starter running. All else ignored.
- */
-byte isState6(){
-    return ( ((! isValidRequest()) & getState(STARTER)) == ON);
-}
-
-/*
- Failed attempts, Waiting, all else off. Valve ignored, Requests ignored.
- */
-byte isState7(){
-    return ( (getAttempts() > 0 ) && ((engineState & ES_TIMEOUT_MASK) == ES_WAITING_ONLY));
-}
-
-/*
  
- */
-byte isState8(){
-    
-}
-
-/*
- */
-byte isState9(){
-    
-}
-
-/*
+ This state also takes into account state 10a in state diagram.
  */
 byte isState10(){
-    
+    return ((engineState & ES_NO_CTRL_MASK) == 0) && ! isValidRequest();
 }
 
 /*
+ Engine not running, but request to start rcvd.
  */
 byte isState11(){
-    
+    return ((engineState & ES_NO_CTRL_MASK) == 0) && isValidRequest();
 }
+
+/*
+ Engine not running, request, valve open.
+ */
+byte isState12(){
+    return (isValidRequest() && ((engineState & ES_NO_CTRL_MASK) == ES_VLV));
+}
+
+/*
+ Engine not running, request, valve, starter, waiting.
+ */
+byte isState13(){
+    return (isValidRequest() && ((engineState & ES_NO_CTRL_MASK) == ES_VLV_STR_WAIT));
+}
+
+/*
+ This is a transition state in which starter was just shut down.
+ 
+ TRIGGER: STATE13 if current dropped
+
+ Engine not running, request, valve, waiting.
+ */
+byte isState14(){
+    return (isValidRequest() && ((engineState & ES_NO_CTRL_MASK) == ES_VLV_WAIT));
+}
+
+/*
+ This is a transition state arrived by the engine starting up.
+ 
+ TRIGGER: engine alone, starting up via generatorOnPin
+ 
+ Engine, request, valve, waiting.
+ */
+byte isState15(){
+    return (isValidRequest() && ((engineState & ES_NO_CTRL_MASK) == ES_VLV_WAIT_ENG));
+}
+
+/*
+ This is a transition state in which the engine just started up.
+ We can start engine time counter here and prepare for warm up.
+ 
+ TRIGGER: STATE15
+ 
+ Engine, request, valve, warming.
+ */
+byte isState16(){
+    return (isValidRequest() && ((engineState & ES_NO_CTRL_MASK) == ES_VLV_ENG_WARM));
+}
+
+/*
+ This is a resting state, in which the engine warms up.
+ 
+ TRIGGER: STATE16
+ 
+ Engine, request, valve, warming, waiting.
+ */
+byte isState17(){
+    return (isValidRequest() && ((engineState & ES_NO_CTRL_MASK) == ES_VLV_ENG_WARM_WAIT));
+}
+
+/*
+ This is a resting state, in which the generator is fully operational.
+ 
+ TRIGGER: STATE17
+ 
+ Engine, request, valve, mains.
+ */
+byte isState20(){
+    return (isValidRequest() && ((engineState & ES_NO_CTRL_MASK) == ES_VLV_ENG_MAINS));
+}
+
+
+/*
+ This is a transition state, in which is still fully operational.
+ 
+ TRIGGER: lost request to run
+ 
+ Engine, valve, mains.
+ */
+byte isState21(){
+    return (!isValidRequest() && ((engineState & ES_NO_CTRL_MASK) == ES_VLV_ENG_MAINS));
+}
+
+/*
+ This is a transition state, in which mains just got turned off.
+ 
+ TRIGGER: STATE21
+ 
+ Engine, valve.
+ */
+byte isState22(){
+    return (!isValidRequest() && ((engineState & ES_NO_CTRL_MASK) == ES_VLV_ENG));
+}
+
+/*
+ This is a transition state, req appeared again just when mains got turned off.
+ 
+ TRIGGER: STATE22
+ 
+ Engine, valve, req.
+ */
+byte isState220(){
+    return (isValidRequest() && ((engineState & ES_NO_CTRL_MASK) == ES_VLV_ENG));
+}
+
+/*
+ This is a transition state, in preparation for cooling.
+ 
+ TRIGGER: STATE22
+ 
+ Engine, valve, cooling.
+ */
+byte isState23(){
+    return (!isValidRequest() && ((engineState & ES_NO_CTRL_MASK) == ES_VLV_COOL));
+}
+
+/*
+ This is a transition state, req appeared again just when mains got turned off.
+ 
+ TRIGGER: STATE23
+ 
+ Engine, valve, cooling.
+ */
+byte isState230(){
+    return (isValidRequest() && ((engineState & ES_NO_CTRL_MASK) == ES_VLV_COOL));
+}
+
+/*
+ This is a resting state, in which the engine cools down.
+ 
+ TRIGGER: STATE23
+ 
+ Engine, valve, cooling, waiting.
+ */
+byte isState24(){
+    return (!isValidRequest() && ((engineState & ES_NO_CTRL_MASK) == ES_VLV_ENG_COOL_WAIT));
+}
+
+/*
+ This is a transition state, req appeared again during cooling.
+ 
+ TRIGGER: STATE24
+ 
+ Engine, valve, cooling.
+ */
+byte isState240(){
+    return (isValidRequest() && ((engineState & ES_NO_CTRL_MASK) == ES_VLV_ENG_COOL_WAIT));
+}
+
+/*
+ This is a transition state, in which the engine has been shut off, but is still running.
+ 
+ TRIGGER: STATE24
+ 
+ Engine.
+ */
+byte isState25(){
+    return (!isValidRequest() && ((engineState & ES_NO_CTRL_MASK) == ES_ENG));
+}
+
+/*
+ This is a transition state, req appeared while engine shutting down.
+ Here, just delay 3000 secs. Eventually eng will stop and we will be in state 11.
+ 
+ TRIGGER: STATE24
+ 
+ Engine, request.
+ */
+byte isState250(){
+    return (isValidRequest() && ((engineState & ES_NO_CTRL_MASK) == ES_ENG));
+}
+
+/*
+ This is a transition state, starter timed out.
+ 
+ TRIGGER: STATE13
+ 
+ Request, valve, timeout.
+ */
+byte isState51(){
+    return (isValidRequest() && (getAttempts()>0) &&
+            ((engineState & ES_NOTO_CTRL_MASK) == ES_VLV));
+}
+
+/*
+ This is a resting state, waiting for resting period before trying again.
+ 
+ TRIGGER: STATE51
+ 
+ Request, valve, timeout, wait.
+ */
+byte isState52(){
+    return (isValidRequest() && (getAttempts()>0) &&
+            ((engineState & ES_NOTO_CTRL_MASK) == ES_VLV_WAIT));
+}
+
+/*
+ This is a state, cranking engine attempt N (1<N<3).
+ 
+ TRIGGER: STATE52
+ 
+ Request, valve, timeout, wait, starter.
+ */
+byte isState53(){
+    return (isValidRequest() && (getAttempts()>0) &&
+            ((engineState & ES_NOTO_CTRL_MASK) == ES_VLV_WAIT));
+}
+
+/*
+ This is a resting state, we are dead.
+ 
+ TRIGGER: STATES 13, 53
+ 
+ FATAL and anything else.
+ */
+byte isState90(){
+    return (getState(FATAL));
+}
+
 
 void Generator(){
     updateStates();

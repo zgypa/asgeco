@@ -91,17 +91,26 @@
 #define ES_REQ_AUTO             0x0600 // auto enabled + auto request
 #define ES_REQ_NOT_AUTO         0x01E0 // auto enabled + auto request
 #define ES_ALL_REQ_ENABLED      0x07E0 // all req + enable set to 1
-#define ES_VALVE_OPEN           0x1000
-#define ES_TIMEOUT_MASK         0xE807 //ENG,WARM,COOL,STARTER,MAINS,WAITING,FATAL
 #define ES_WAITING_ONLY         0x4000 //WAITING
 #define ES_ENG_RUN_COLD         0x1001 //ENG, VALVE
-#define ES_TO_CONTROL_MASK      0xF807 //all but timouts and controls
-#define ES_COOLINGDN            0x5005 //ENG, COOL, VALVE, WAITING
-#define ES_COOLEDDN             0x1005 //ENG, COOL, VALVE
-#define ES_WARMINGUP            0x5003 //ENG, WARM, VALVE, WAITING
-#define ES_WARMEDUP             0x1003 //ENG, WARM, VALVE
-#define ES_FULL_ON              0x3001 //ENG, VALVE, MAINS
-#define ES_SHUTTINGDN           0x0001 //ENG alone, must be shutting down.
+
+#define ES_ENG                  0x0001
+#define ES_VLV                  0x1000
+#define ES_VLV_ENG              0x1001
+#define ES_VLV_COOL             0x1005
+#define ES_VLV_STR_WAIT         0x5800
+#define ES_VLV_WAIT             0x5000
+#define ES_VLV_WAIT_ENG         0x5001
+#define ES_VLV_ENG_WARM         0x1003
+#define ES_VLV_ENG_WARM_WAIT    0x5003
+#define ES_VLV_ENG_COOL_WAIT    0x5005
+#define ES_VLV_ENG_MAINS        0x3001
+
+#define ES_NOTIMEOUT_MASK       0xFFE7 //use this to filter out timeouts
+#define ES_NOTO_CTRL_MASK       0xF807 //use this to filter out both timeouts and CTRL
+#define ES_NO_CTRL_MASK         0xF81F //use this to filter out CTRLs
+
+
 
 #define EEPROMINDEX             0
 #define CURRENT_THRESHOLD       200
