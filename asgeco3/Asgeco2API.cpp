@@ -50,46 +50,46 @@ void printState(EthernetClient ec) {
     ec.print(c);
     ec.print(digitalRead(auxPin), DEC);//6
     ec.print(c);
-    ec.print(readBatt());//7
+    ec.print(getBatt());//7
     ec.print(c);
     ec.print(readVcc());//8
     ec.print(c);
     ec.print(analogRead(starterCurrentPin)) ;//9
     ec.print(c);
-//    ec.print(isON(ENGINE));//10
+    ec.print(getState(ENGINE));//10
     ec.print(c);
-//    ec.print(isON(WARMINGUP));//11
+    ec.print(getState(WARMINGUP));//11
     ec.print(c);
-//    ec.print(isON(COOLINGDOWN));//12
+    ec.print(getState(COOLINGDOWN));//12
     ec.print(c);
-//    ec.print(isON(SLEEP));//13
+    ec.print(getState(WAITING));//13
     ec.print(c);
-//    ec.print(isON(AUXDISABLE));//14
+    ec.print(getState(MANU_ENABLE));//14
     ec.print(c);
-//    ec.print(isON(FATAL));//15
+    ec.print(getState(FATAL));//15
     ec.print(c);
-//    ec.print(isON(LASTAUXSTATE));//16
+    ec.print(0);//16
     ec.print(c);
-//    ec.print(isON(AUTO));//17
+    ec.print(getState(AUTO_ENABLE));//17
     ec.print(c);
-//    ec.print(getAttempts());//18
+    ec.print(getAttempts());//18
     ec.print(c);
-//    ec.print(getTotalRunSecs(),DEC);//19
+    ec.print(getTotalRunSecs(),DEC);//19
     ec.print(c);
 //    if(isEngineRunning())
 //        ec.print((millis() - getEngineStartTime())/1000);//20
 //    else
 //        ec.print(0);
     ec.print(c);
-//    ec.print(getGENON());//21
+    ec.print(getGENON());//21
     ec.print(c);
-//    ec.print(getGENOFF());//22
+    ec.print(getGENOFF());//22
     ec.print(c);
-//    ec.print(isON(REMOTE_ENABLE));//23
+    ec.print(getState(REMOTE_ENABLE));//23
     ec.print(c);
-//    ec.print(isON(REMOTE_CONTROL));//24
+    ec.print(getState(REMOTE_REQUEST));//24
     ec.print(c);
-//    ec.print(getVconv());//25
+    ec.print(getVconv());//25
     ec.print(c);
 }
 

@@ -38,11 +38,11 @@ boolean getState(byte b){
 }
 
 void setState(byte b, byte s){
-//    if (s)
-//        engineState |= (1 << b);
-//    else
-//        engineState &= ~(1 << b);
-    bitWrite(engineState, b, s);
+    if (getState(b) != s) {
+        bitWrite(engineState, b, s);
+//        logg(String("Set: ") + String(b));
+        logg(String("New: 0x") + String(engineState, HEX));
+    }
 }
 
 byte getStarter(){
@@ -129,7 +129,8 @@ void setTotalRunSecs(long secs){
  => Vin = Vout * 9.51
  
  */
-int readBatt(){
+int getBatt(){
+    // something wrong here: value seems to overflow.
     int vb = readVpin() * getVconv() / 1000;
     vb = round(vb / 100.0);
     return (vb*100);
@@ -208,18 +209,22 @@ void setGENOFF(int g){
     EEPROM_writeAnything(EEPROMINDEX+12, g);
 }
 
+
+/*
+ open and close fuelvalve functions are not responsible for checking the state of the microswitch.
+ This should be done making use of states.
+ */
 void openFuelValve(){
     logg("Opening valve");
-    while(! getValve()) digitalWrite(onSolenoidPin, HIGH);
+    digitalWrite(onSolenoidPin, HIGH);
+    delay(200);
     digitalWrite(onSolenoidPin, LOW);
-    logg("Valve 1");
 }
 
 void closeFuelValve(){
     logg("Closing valve");
-    digitalWrite(offSolenoidPin, HIGH); //try to close regardless of microswitch, which might not be reliable.
+    digitalWrite(offSolenoidPin, HIGH);
     delay(100);
-//    if (getValve()) digitalWrite(offSolenoidPin, HIGH);
     digitalWrite(offSolenoidPin, LOW);
     logg("Valve 0");
 }
@@ -294,21 +299,21 @@ void setUpPinMode(){
 
     setState(MANU_ENABLE, 1);
     
-    Serial.println(ES_REQ_MANU, HEX);
-    Serial.println(ES_REST_REMT_MANU_AUTO, HEX);
+//    Serial.println(ES_REQ_MANU, HEX);
+//    Serial.println(ES_REST_REMT_MANU_AUTO, HEX);
 
 
 }
 
-void updateStates(){
-    int past = engineState;
-    setState(ENGINE,getEngine());
-    setState(VALVE,getValve());
-    setState(MAINS,getMains());
-    setState(STARTER,getStarter());
-    setState(MANU_REQUEST,getAux());
-    if (past != engineState)
-        logg(String("New: 0x") + String(engineState, HEX));
+/*
+ Stores amount of runtime in EEPROM.
+ 
+ Returns amount logged this time.
+ */
+unsigned long logOnTime(){
+    unsigned long thisrun = (millis() - engineStartTime)/1000;
+    EEPROM_writeAnything(EEPROMINDEX, getTotalRunSecs() + thisrun);
+    return thisrun;
 }
 
 /*
@@ -361,72 +366,189 @@ void increaseAttempts(){
 }
 
 
+
+void updateStates(){
+    if(getState(ENGINE)        != getEngine()){
+        setState(ENGINE,getEngine());
+        if (getState(ENGINE) == ON) // engine just started: start counter
+            engineStartTime = millis();
+        else {
+            logOnTime();
+            engineStartTime = 0;
+        }
+    }
+    //    if(getState(VALVE)         != getValve())    setState(VALVE,getValve());
+    //    if(getState(MAINS)         != getMains())    setState(MAINS,getMains());
+    //    if(getState(STARTER)       != getStarter())  setState(STARTER,getStarter());
+    //    if(getState(MANU_REQUEST)  != getAux())      setState(MANU_REQUEST,getAux());
+    setState(VALVE,getValve());
+    setState(MAINS,getMains());
+    setState(STARTER,getStarter());
+    setState(MANU_REQUEST,getAux());
+    if(getBatt() < getGENON())  setState(AUTO_REQUEST, ON);
+    if(getBatt() > getGENOFF()) setState(AUTO_REQUEST, OFF);
+}
+
+/*
+ Engine not running, no request to start. No Timeouts.
+ */
+byte isState0(){
+    return ((engineState & (compl ES_ALL_REQ_ENABLED)) == 0) && ! isValidRequest();
+}
+
+/*
+ Engine not running, request for manual start, no timeouts.
+
+ NOTting the auto and remt bits will set them to 0, hence allowing them to be ignored.
+ */
+byte isState1(){
+    return ((engineState & (compl ES_REQ_NOT_MANU)) == ES_REQ_MANU);
+}
+
+/*
+ Like state 1, but remote request.
+ */
+byte isState2(){
+    return ((engineState & (compl ES_REQ_NOT_REMT)) == ES_REQ_REMT);
+}
+
+/*
+ Like state 1, but automatic request.
+ */
+byte isState3(){
+    return ((engineState & (compl ES_REQ_NOT_AUTO)) == ES_REQ_AUTO);
+}
+
+/*
+ A request with only valve open in this state.
+ */
+byte isState4(){
+    return (isValidRequest() && ((engineState & (compl ES_ALL_REQ_ENABLED)) == ES_VALVE_OPEN));
+}
+
+/*
+  A request with starter running. All else ignored.
+ */
+byte isState5(){
+    return((isValidRequest() & getState(STARTER)) == ON);
+}
+
+/*
+ No request with starter running. All else ignored.
+ */
+byte isState6(){
+    return ( ((! isValidRequest()) & getState(STARTER)) == ON);
+}
+
+/*
+ Failed attempts, Waiting, all else off. Valve ignored, Requests ignored.
+ */
+byte isState7(){
+    return ( (getAttempts() > 0 ) && ((engineState & ES_TIMEOUT_MASK) == ES_WAITING_ONLY));
+}
+
+/*
+ 
+ */
+byte isState8(){
+    
+}
+
+/*
+ */
+byte isState9(){
+    
+}
+
+/*
+ */
+byte isState10(){
+    
+}
+
+/*
+ */
+byte isState11(){
+    
+}
+
 void Generator(){
     updateStates();
 
-    if ( ((engineState & (compl ES_ALL_REQ_ENABLED)) == 0) && ! isValidRequest()) {
-    // we don't have a valid request AND all other pins are 0, then we are here.
-            // do nothing, just wait for state to change
-            Serial.println("Resting");
-    
-    } else if ((engineState & (compl ES_REQ_NOT_MANU)) == ES_REQ_MANU){
-        // NOTting the auto and remt bits will set them to 0, hence allowing them to be ignored.
+    if (isState0()) {
+        // do nothing, just wait for state to change
+    } else if (isState1()){
         // There has been a valid manual request to start
-        Serial.println("MAN START request");
-        setValve(1);
-        
-    } else if ((engineState & (compl ES_REQ_NOT_REMT)) == ES_REQ_REMT){
-        // NOTting the auto and remt bits will set them to 0, hence allowing them to be ignored.
-        // There has been a valid manual request to start
-        Serial.println("REMT START request");
-        
-        
-    } else if ((engineState & (compl ES_REQ_NOT_AUTO)) == ES_REQ_AUTO){
-        // NOTting the auto and remt bits will set them to 0, hence allowing them to be ignored.
-        // There has been a valid manual request to start
-        Serial.println("AUTO START request");
-        
-        
-    } else if (isValidRequest() && (engineState & (compl ES_ALL_REQ_ENABLED) == ES_VALVE_OPEN)){
-        Serial.println("Valve open.");
-        setStarter(1);
-        setWaiting(1);
+        logg("MANU REQ ON");
+        setValve(OPEN);
+    } else if (isState2()){
+        // There has been a valid remote request to start
+        logg("REMT REQ ON");
+        setValve(OPEN);
+    } else if (isState3()){
+        // There has been a valid auto request to start
+        logg("AUTO REQ ON");
+        setValve(OPEN);
+    } else if (isState4()){
+        logg("Valve open.");
+        setStarter(ON);
+        setWaiting(ON);
         initialCurrent = readCurrent();
-    } else if ((isValidRequest() & getState(STARTER)) == 1){
-        Serial.println("Starter running.");
+    } else if (isState5()){
+        logg("Starter running.");
         if (initialCurrent - readCurrent() > CURRENT_THRESHOLD) {
             logg("Dropped");
-            setStarter(0);
-            setWaiting(0);
+            setStarter(OFF);
+            setWaiting(OFF);
         } else if (millis() - waitStartTime > STARTER_TIMEOUT ) {
             logg("Timeout");
-            setStarter(0);
-            setWaiting(0);
+            setStarter(OFF);
+            setWaiting(OFF);
             increaseAttempts();
-            setWaiting(1); // for timeout counter
+            setWaiting(ON); // for timeout counter
         }
-    } else if ( ((! isValidRequest()) & getState(STARTER)) == 1){
-        Serial.println("Starter should not be running");
-        setStarter(0);
-    } else if ( (getAttempts() > 0 ) && (engineState & ES_TIMEOUT_MASK == ES_WAITING_ONLY)){
+    } else if (isState6()){
+        logg("Starter should not be running");
+        setStarter(OFF);
+    } else if (isState7()){
         // starting timed out. Waiting some time before trying again
         if (millis() - waitStartTime > SLEEP_TIMEOUT) {
-            setWaiting(0);
+            setWaiting(OFF);
         }
-    } else if (isValidRequest() && (engineState & ES_WARMUP_MASK == ES_ENG_VALVE)){
+    } else if (isValidRequest() && ((engineState & ES_TO_CONTROL_MASK) == ES_ENG_RUN_COLD)){
         // Engine is running, need to warm up
-        setWaiting(1);
-        setState(WARMINGUP, 1);
-    } else if (isValidRequest() && (engineState & ES_WARMUP_MASK == ES_WARMINGUP)){
+        setWaiting(ON);
+        setState(WARMINGUP, ON);
+    } else if (isValidRequest() && ((engineState & ES_TO_CONTROL_MASK) == ES_WARMINGUP)){
         // Now we are warming up
         if (millis() - waitStartTime > WARM_COOL_INTERVAL) {
-            setWaiting(0);
+            setWaiting(OFF);
         }
-    } else if (isValidRequest() && (engineState & ES_WARMUP_MASK == ES_WARMEDUP)){
+    } else if (isValidRequest() && ((engineState & ES_TO_CONTROL_MASK) == ES_WARMEDUP)){
         // Engine warmed up, ready for Mains.
-        setState(WARMINGUP, 0);
-        setMains(1);
+        setState(WARMINGUP, OFF);
+        setMains(ON);
+    } else if (isValidRequest() && ((engineState & ES_TO_CONTROL_MASK) == ES_FULL_ON)){
+        // Now we are full on. Stay here until interrupted.
+    } else if (! isValidRequest() && ((engineState & ES_TO_CONTROL_MASK) == ES_FULL_ON)){
+        // Received request to stop
+        setMains(OFF);
+    } else if (! isValidRequest() && ((engineState & ES_TO_CONTROL_MASK) == ES_ENG_RUN_COLD)){
+        // Engine warm, let's cool down
+        setWaiting(ON);
+        setState(COOLINGDOWN, ON);
+    } else if (! isValidRequest() && ((engineState & ES_TO_CONTROL_MASK) == ES_COOLINGDN)){
+        // Now we are cooling off
+        if (millis() - waitStartTime > WARM_COOL_INTERVAL) {
+            setWaiting(OFF);
+        }
+    } else if (! isValidRequest() && ((engineState & ES_TO_CONTROL_MASK) == ES_COOLEDDN)){
+        // Engine cooled down ready for shutdown.
+        setState(COOLINGDOWN, OFF);
+        setValve(CLOSE);
+    } else if (! isValidRequest() && ((engineState & ES_TO_CONTROL_MASK) == ES_SHUTTINGDN)){
+        // This should be a very brief state, in which there is no request to start, and engine is still running. Maybe disable request controls here?
+    } else {
+        logg("ERR:0x" + String(engineState, HEX));
     }
-
-
 }

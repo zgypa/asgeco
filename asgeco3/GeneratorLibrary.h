@@ -84,7 +84,6 @@
 #define REST_REMT_MANU          0x00A0
 #define REST_REMT_AUTO          0x0280
 #define ES_REST_REMT_MANU_AUTO  0x02A0
-#define ES_REST_ALL_ENABLED     0x07E0
 #define ES_REQ_MANU             0x0060 // manu enabled + manu request
 #define ES_REQ_NOT_MANU         0x0780 // the complement of ES_REQ_MANU only of enable/request bits
 #define ES_REQ_REMT             0x0180 // remote enabled + remote request
@@ -95,16 +94,26 @@
 #define ES_VALVE_OPEN           0x1000
 #define ES_TIMEOUT_MASK         0xE807 //ENG,WARM,COOL,STARTER,MAINS,WAITING,FATAL
 #define ES_WAITING_ONLY         0x4000 //WAITING
-#define ES_ENG_VALVE            0x1001
-#define ES_WARMUP_MASK          0xF807 //all but timouts and controls
+#define ES_ENG_RUN_COLD         0x1001 //ENG, VALVE
+#define ES_TO_CONTROL_MASK      0xF807 //all but timouts and controls
+#define ES_COOLINGDN            0x5005 //ENG, COOL, VALVE, WAITING
+#define ES_COOLEDDN             0x1005 //ENG, COOL, VALVE
 #define ES_WARMINGUP            0x5003 //ENG, WARM, VALVE, WAITING
-#define ES_WARMEDUP             0x1003
+#define ES_WARMEDUP             0x1003 //ENG, WARM, VALVE
+#define ES_FULL_ON              0x3001 //ENG, VALVE, MAINS
+#define ES_SHUTTINGDN           0x0001 //ENG alone, must be shutting down.
 
 #define EEPROMINDEX             0
 #define CURRENT_THRESHOLD       200
 #define STARTER_TIMEOUT         7000    // in ms timeout for starter.
 #define SLEEP_TIMEOUT           20000   // in ms time to wait between attempts.
 #define WARM_COOL_INTERVAL      60000   // in ms interval to wait for warm up/cool down
+
+
+#define ON  1
+#define OPEN 1
+#define CLOSE 0
+#define OFF 0
 
 boolean getState(byte b);
 void setState(byte b, byte s);
@@ -132,7 +141,7 @@ long getEngineStartTime();
 unsigned long getTotalRunSecs();
 void setTotalRunSecs(long secs);
 
-int readBatt();
+int getBatt();
 void setBatt(int vbatt);
 
 long readVcc();
