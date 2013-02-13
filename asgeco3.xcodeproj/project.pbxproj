@@ -876,6 +876,64 @@
 		905370EE16C6C2B20050744E /* Stepper.h in Sources */ = {isa = PBXBuildFile; fileRef = 90536E6E16C6C1740050744E /* Stepper.h */; };
 		905370EF16C6C2B20050744E /* Supervisor.h in Sources */ = {isa = PBXBuildFile; fileRef = 90536E7216C6C1740050744E /* Supervisor.h */; };
 		905370F016C6C2B20050744E /* TimedAction.h in Sources */ = {isa = PBXBuildFile; fileRef = 90536E7616C6C1740050744E /* TimedAction.h */; };
+		90B81E0416CAC641000C1050 /* GeneratorLibrary.h in Sources */ = {isa = PBXBuildFile; fileRef = 908F50E916C7A8DE00AC4C1C /* GeneratorLibrary.h */; };
+		90B81E0516CAC641000C1050 /* Asgeco2API.h in Sources */ = {isa = PBXBuildFile; fileRef = 908F50ED16C7B2FC00AC4C1C /* Asgeco2API.h */; };
+		90B81E0616CAC641000C1050 /* EEPROM.h in Sources */ = {isa = PBXBuildFile; fileRef = 9053692C16C6C1700050744E /* EEPROM.h */; };
+		90B81E0716CAC641000C1050 /* Boards.h in Sources */ = {isa = PBXBuildFile; fileRef = 9053693916C6C1700050744E /* Boards.h */; };
+		90B81E0816CAC641000C1050 /* Firmata.h in Sources */ = {isa = PBXBuildFile; fileRef = 9053693A16C6C1700050744E /* Firmata.h */; };
+		90B81E0916CAC641000C1050 /* Servo.h in Sources */ = {isa = PBXBuildFile; fileRef = 9053693C16C6C1700050744E /* Servo.h */; };
+		90B81E0A16CAC641000C1050 /* debug.h in Sources */ = {isa = PBXBuildFile; fileRef = 9053694516C6C1700050744E /* debug.h */; };
+		90B81E0B16CAC641000C1050 /* server_drv.h in Sources */ = {isa = PBXBuildFile; fileRef = 9053694616C6C1700050744E /* server_drv.h */; };
+		90B81E0C16CAC641000C1050 /* socket.h in Sources */ = {isa = PBXBuildFile; fileRef = 9053694716C6C1700050744E /* socket.h */; };
+		90B81E0D16CAC641000C1050 /* spi_drv.h in Sources */ = {isa = PBXBuildFile; fileRef = 9053694816C6C1700050744E /* spi_drv.h */; };
+		90B81E0E16CAC641000C1050 /* wifi_drv.h in Sources */ = {isa = PBXBuildFile; fileRef = 9053694916C6C1700050744E /* wifi_drv.h */; };
+		90B81E0F16CAC641000C1050 /* wifi_spi.h in Sources */ = {isa = PBXBuildFile; fileRef = 9053694A16C6C1700050744E /* wifi_spi.h */; };
+		90B81E1016CAC641000C1050 /* wl_definitions.h in Sources */ = {isa = PBXBuildFile; fileRef = 9053694B16C6C1700050744E /* wl_definitions.h */; };
+		90B81E1116CAC641000C1050 /* wl_types.h in Sources */ = {isa = PBXBuildFile; fileRef = 9053694C16C6C1700050744E /* wl_types.h */; };
+		90B81E1216CAC641000C1050 /* socket.h in Sources */ = {isa = PBXBuildFile; fileRef = 9053696116C6C1700050744E /* socket.h */; };
+		90B81E1316CAC641000C1050 /* w5100.h in Sources */ = {isa = PBXBuildFile; fileRef = 9053696216C6C1710050744E /* w5100.h */; };
+		90B81E1416CAC641000C1050 /* LiquidCrystal.h in Sources */ = {isa = PBXBuildFile; fileRef = 9053697616C6C1710050744E /* LiquidCrystal.h */; };
+		90B81E1516CAC641000C1050 /* Matrix.h in Sources */ = {isa = PBXBuildFile; fileRef = 90536A3D16C6C1710050744E /* Matrix.h */; };
+		90B81E1616CAC641000C1050 /* Servo.h in Sources */ = {isa = PBXBuildFile; fileRef = 90536A4116C6C1710050744E /* Servo.h */; };
+		90B81E1716CAC641000C1050 /* SoftwareSerial.h in Sources */ = {isa = PBXBuildFile; fileRef = 90536A4516C6C1710050744E /* SoftwareSerial.h */; };
+		90B81E1816CAC641000C1050 /* IRremote.h in Sources */ = {isa = PBXBuildFile; fileRef = 90536B4B16C6C1720050744E /* IRremote.h */; };
+		90B81E1916CAC641000C1050 /* IRremoteInt.h in Sources */ = {isa = PBXBuildFile; fileRef = 90536B4C16C6C1720050744E /* IRremoteInt.h */; };
+		90B81E1A16CAC641000C1050 /* Stepper.h in Sources */ = {isa = PBXBuildFile; fileRef = 90536B5A16C6C1720050744E /* Stepper.h */; };
+		90B81E1B16CAC641000C1050 /* LiquidCrystal.h in Sources */ = {isa = PBXBuildFile; fileRef = 90536C1916C6C1720050744E /* LiquidCrystal.h */; };
+		90B81E1C16CAC641000C1050 /* Wire.h in Sources */ = {isa = PBXBuildFile; fileRef = 90536C2116C6C1720050744E /* Wire.h */; };
+		90B81E1D16CAC641000C1050 /* LiquidCrystal.h in Sources */ = {isa = PBXBuildFile; fileRef = 90536C8016C6C1730050744E /* LiquidCrystal.h */; };
+		90B81E1E16CAC641000C1050 /* SoftPWMServo.h in Sources */ = {isa = PBXBuildFile; fileRef = 90536CA816C6C1730050744E /* SoftPWMServo.h */; };
+		90B81E1F16CAC641000C1050 /* binary.h in Sources */ = {isa = PBXBuildFile; fileRef = 90536CB616C6C1730050744E /* binary.h */; };
+		90B81E2016CAC641000C1050 /* Sprite.h in Sources */ = {isa = PBXBuildFile; fileRef = 90536CB916C6C1730050744E /* Sprite.h */; };
+		90B81E2116CAC641000C1050 /* twi.h in Sources */ = {isa = PBXBuildFile; fileRef = 90536CC216C6C1730050744E /* twi.h */; };
+		90B81E2216CAC641000C1050 /* EEPROM.h in Sources */ = {isa = PBXBuildFile; fileRef = 90536D4B16C6C1730050744E /* EEPROM.h */; };
+		90B81E2316CAC641000C1050 /* socket.h in Sources */ = {isa = PBXBuildFile; fileRef = 90536D5516C6C1730050744E /* socket.h */; };
+		90B81E2416CAC641000C1050 /* w5100.h in Sources */ = {isa = PBXBuildFile; fileRef = 90536D5616C6C1730050744E /* w5100.h */; };
+		90B81E2516CAC641000C1050 /* Boards.h in Sources */ = {isa = PBXBuildFile; fileRef = 90536D5816C6C1730050744E /* Boards.h */; };
+		90B81E2616CAC641000C1050 /* Firmata.h in Sources */ = {isa = PBXBuildFile; fileRef = 90536D5916C6C1730050744E /* Firmata.h */; };
+		90B81E2716CAC641000C1050 /* Stepper.h in Sources */ = {isa = PBXBuildFile; fileRef = 90536D6D16C6C1730050744E /* Stepper.h */; };
+		90B81E2816CAC641000C1050 /* HardwareSerial.h in Sources */ = {isa = PBXBuildFile; fileRef = 90536DC116C6C1730050744E /* HardwareSerial.h */; };
+		90B81E2916CAC641000C1050 /* WAnalog.h in Sources */ = {isa = PBXBuildFile; fileRef = 90536DC416C6C1730050744E /* WAnalog.h */; };
+		90B81E2A16CAC641000C1050 /* WConstantTypes.h in Sources */ = {isa = PBXBuildFile; fileRef = 90536DC716C6C1730050744E /* WConstantTypes.h */; };
+		90B81E2B16CAC641000C1050 /* WDelay.h in Sources */ = {isa = PBXBuildFile; fileRef = 90536DCA16C6C1730050744E /* WDelay.h */; };
+		90B81E2C16CAC641000C1050 /* WDigital.h in Sources */ = {isa = PBXBuildFile; fileRef = 90536DCD16C6C1730050744E /* WDigital.h */; };
+		90B81E2D16CAC641000C1050 /* WHardwareSerial.h in Sources */ = {isa = PBXBuildFile; fileRef = 90536DD016C6C1730050744E /* WHardwareSerial.h */; };
+		90B81E2E16CAC641000C1050 /* WHardwareTimer.h in Sources */ = {isa = PBXBuildFile; fileRef = 90536DD316C6C1730050744E /* WHardwareTimer.h */; };
+		90B81E2F16CAC641000C1050 /* WInterrupts.h in Sources */ = {isa = PBXBuildFile; fileRef = 90536DD616C6C1730050744E /* WInterrupts.h */; };
+		90B81E3016CAC641000C1050 /* Wiring.h in Sources */ = {isa = PBXBuildFile; fileRef = 90536DD716C6C1730050744E /* Wiring.h */; };
+		90B81E3116CAC641000C1050 /* WPower.h in Sources */ = {isa = PBXBuildFile; fileRef = 90536DD816C6C1730050744E /* WPower.h */; };
+		90B81E3216CAC641000C1050 /* WProgram.h in Sources */ = {isa = PBXBuildFile; fileRef = 90536DD916C6C1730050744E /* WProgram.h */; };
+		90B81E3316CAC641000C1050 /* WPulse.h in Sources */ = {isa = PBXBuildFile; fileRef = 90536DDC16C6C1730050744E /* WPulse.h */; };
+		90B81E3416CAC641000C1050 /* WPWM.h in Sources */ = {isa = PBXBuildFile; fileRef = 90536DDF16C6C1730050744E /* WPWM.h */; };
+		90B81E3516CAC641000C1050 /* WSleep.h in Sources */ = {isa = PBXBuildFile; fileRef = 90536DE016C6C1730050744E /* WSleep.h */; };
+		90B81E3616CAC641000C1050 /* WTone.h in Sources */ = {isa = PBXBuildFile; fileRef = 90536DE316C6C1730050744E /* WTone.h */; };
+		90B81E3716CAC641000C1050 /* Servo.h in Sources */ = {isa = PBXBuildFile; fileRef = 90536E2316C6C1740050744E /* Servo.h */; };
+		90B81E3816CAC641000C1050 /* ServoTimers.h in Sources */ = {isa = PBXBuildFile; fileRef = 90536E2416C6C1740050744E /* ServoTimers.h */; };
+		90B81E3916CAC641000C1050 /* SoftwareSerial.h in Sources */ = {isa = PBXBuildFile; fileRef = 90536E2816C6C1740050744E /* SoftwareSerial.h */; };
+		90B81E3A16CAC641000C1050 /* Potentiometer.h in Sources */ = {isa = PBXBuildFile; fileRef = 90536E6216C6C1740050744E /* Potentiometer.h */; };
+		90B81E3B16CAC671000C1050 /* GeneratorLibrary.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 908F50E816C7A8DE00AC4C1C /* GeneratorLibrary.cpp */; };
+		90B81E3C16CAC671000C1050 /* Asgeco2API.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 908F50EC16C7B2FB00AC4C1C /* Asgeco2API.cpp */; };
+		90B81E3D16CAC671000C1050 /* Syslog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 90536EDA16C6C2360050744E /* Syslog.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -4257,11 +4315,12 @@
 		};
 		9053688E16C6C1700050744E /* Fast */ = {
 			isa = PBXLegacyTarget;
-			buildArgumentsString = "fast -C $(PROJECT)";
+			buildArgumentsString = fast;
 			buildConfigurationList = 90536EC416C6C1740050744E /* Build configuration list for PBXLegacyTarget "Fast" */;
 			buildPhases = (
 			);
 			buildToolPath = make;
+			buildWorkingDirectory = "$(PROJECT)";
 			dependencies = (
 			);
 			name = Fast;
@@ -4340,6 +4399,64 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				90B81E3B16CAC671000C1050 /* GeneratorLibrary.cpp in Sources */,
+				90B81E3C16CAC671000C1050 /* Asgeco2API.cpp in Sources */,
+				90B81E3D16CAC671000C1050 /* Syslog.cpp in Sources */,
+				90B81E0416CAC641000C1050 /* GeneratorLibrary.h in Sources */,
+				90B81E0516CAC641000C1050 /* Asgeco2API.h in Sources */,
+				90B81E0616CAC641000C1050 /* EEPROM.h in Sources */,
+				90B81E0716CAC641000C1050 /* Boards.h in Sources */,
+				90B81E0816CAC641000C1050 /* Firmata.h in Sources */,
+				90B81E0916CAC641000C1050 /* Servo.h in Sources */,
+				90B81E0A16CAC641000C1050 /* debug.h in Sources */,
+				90B81E0B16CAC641000C1050 /* server_drv.h in Sources */,
+				90B81E0C16CAC641000C1050 /* socket.h in Sources */,
+				90B81E0D16CAC641000C1050 /* spi_drv.h in Sources */,
+				90B81E0E16CAC641000C1050 /* wifi_drv.h in Sources */,
+				90B81E0F16CAC641000C1050 /* wifi_spi.h in Sources */,
+				90B81E1016CAC641000C1050 /* wl_definitions.h in Sources */,
+				90B81E1116CAC641000C1050 /* wl_types.h in Sources */,
+				90B81E1216CAC641000C1050 /* socket.h in Sources */,
+				90B81E1316CAC641000C1050 /* w5100.h in Sources */,
+				90B81E1416CAC641000C1050 /* LiquidCrystal.h in Sources */,
+				90B81E1516CAC641000C1050 /* Matrix.h in Sources */,
+				90B81E1616CAC641000C1050 /* Servo.h in Sources */,
+				90B81E1716CAC641000C1050 /* SoftwareSerial.h in Sources */,
+				90B81E1816CAC641000C1050 /* IRremote.h in Sources */,
+				90B81E1916CAC641000C1050 /* IRremoteInt.h in Sources */,
+				90B81E1A16CAC641000C1050 /* Stepper.h in Sources */,
+				90B81E1B16CAC641000C1050 /* LiquidCrystal.h in Sources */,
+				90B81E1C16CAC641000C1050 /* Wire.h in Sources */,
+				90B81E1D16CAC641000C1050 /* LiquidCrystal.h in Sources */,
+				90B81E1E16CAC641000C1050 /* SoftPWMServo.h in Sources */,
+				90B81E1F16CAC641000C1050 /* binary.h in Sources */,
+				90B81E2016CAC641000C1050 /* Sprite.h in Sources */,
+				90B81E2116CAC641000C1050 /* twi.h in Sources */,
+				90B81E2216CAC641000C1050 /* EEPROM.h in Sources */,
+				90B81E2316CAC641000C1050 /* socket.h in Sources */,
+				90B81E2416CAC641000C1050 /* w5100.h in Sources */,
+				90B81E2516CAC641000C1050 /* Boards.h in Sources */,
+				90B81E2616CAC641000C1050 /* Firmata.h in Sources */,
+				90B81E2716CAC641000C1050 /* Stepper.h in Sources */,
+				90B81E2816CAC641000C1050 /* HardwareSerial.h in Sources */,
+				90B81E2916CAC641000C1050 /* WAnalog.h in Sources */,
+				90B81E2A16CAC641000C1050 /* WConstantTypes.h in Sources */,
+				90B81E2B16CAC641000C1050 /* WDelay.h in Sources */,
+				90B81E2C16CAC641000C1050 /* WDigital.h in Sources */,
+				90B81E2D16CAC641000C1050 /* WHardwareSerial.h in Sources */,
+				90B81E2E16CAC641000C1050 /* WHardwareTimer.h in Sources */,
+				90B81E2F16CAC641000C1050 /* WInterrupts.h in Sources */,
+				90B81E3016CAC641000C1050 /* Wiring.h in Sources */,
+				90B81E3116CAC641000C1050 /* WPower.h in Sources */,
+				90B81E3216CAC641000C1050 /* WProgram.h in Sources */,
+				90B81E3316CAC641000C1050 /* WPulse.h in Sources */,
+				90B81E3416CAC641000C1050 /* WPWM.h in Sources */,
+				90B81E3516CAC641000C1050 /* WSleep.h in Sources */,
+				90B81E3616CAC641000C1050 /* WTone.h in Sources */,
+				90B81E3716CAC641000C1050 /* Servo.h in Sources */,
+				90B81E3816CAC641000C1050 /* ServoTimers.h in Sources */,
+				90B81E3916CAC641000C1050 /* SoftwareSerial.h in Sources */,
+				90B81E3A16CAC641000C1050 /* Potentiometer.h in Sources */,
 				90536F1D16C6C2B10050744E /* LocalLibrary.h in Sources */,
 				90536F1F16C6C2B10050744E /* EEPROMAnything.h in Sources */,
 				90536F2016C6C2B10050744E /* Syslog.h in Sources */,

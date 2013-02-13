@@ -165,77 +165,77 @@ void writeStates(char clientline[]){
     while (pch != NULL)
     {
         switch (atoi(pch)){
-            case 2:
+            case API_STARTER:
                 pch = strtok (NULL, FS);
                 logg("web:STARTER=" + String(atoi(pch)));
                 setStarter(atoi(pch));
                 break;
-            case 3:
+            case API_ONSOLENOID:
                 pch = strtok (NULL, FS);
                 logg("web:ONSOLENOID=" + String(atoi(pch)));
 //                digitalWrite(onSolenoidPin,atoi(pch));
                 break;
-            case 4:
+            case API_OFFSOLENOID:
                 pch = strtok (NULL, FS);
                 logg("web:OFFSOLENOID=" + String(atoi(pch)));
 //                digitalWrite(offSolenoidPin,atoi(pch));
                 break;
-            case 5:
+            case API_MAINS:
                 pch = strtok (NULL, FS);
                 logg("web:MAINS=" + String(atoi(pch)));
                 setMains(atoi(pch));
                 break;
-            case 14:
+            case API_MAN_ENABLE:
                 pch = strtok (NULL, FS);
                 logg("web:MAN_EN=" + String(atoi(pch)));
                 setState(MANU_ENABLE, atoi(pch));
                 break;
-            case 15:
+            case API_FATAL:
                 pch = strtok (NULL, FS);
                 logg("web:FATAL=" + String(atoi(pch)));
                 setState(FATAL, atoi(pch));
                 break;
-            case 16:
+            case API_MAN_REQUEST:
                 pch = strtok (NULL, FS);
-                logg("web:MANU_CONTROL=" + String(atoi(pch)));
-                setState(MANU_CONTROL, atoi(pch));
+                logg("web:MANU_REQ=" + String(atoi(pch)));
+                setState(MANU_REQUEST, atoi(pch));
                 break;
-            case 17:
+            case API_AUTO_ENABLE:
                 pch = strtok (NULL, FS);
                 logg("web:AUTO_ENABLE=" + String(atoi(pch)));
                 setState(AUTO_ENABLE, atoi(pch));
                 break;
-            case 18:
+            case API_TIMEOUTS:
                 pch = strtok (NULL, FS);
                 // TODO
                 // logg("web:TIMEOUTS=" + String(atoi(pch)));
                 break;
-            case 19:
+            case API_SECS_TOT:
                 pch = strtok (NULL, FS);
                 logg("web:SECS_TOT=" + String(atoi(pch)));
                 setTotalRunSecs(long(atoi(pch)));
                 break;
-            case 21:
+            case API_GENON:
                 pch = strtok (NULL, FS);
                 logg("web:GENON=" + String(atoi(pch)));
                 setGENON(atoi(pch));
                 break;
-            case 22:
+            case API_GENOFF:
                 pch = strtok (NULL, FS);
                 logg("web:GENOFF=" + String(atoi(pch)));
                 setGENOFF(atoi(pch));
                 break;
-            case 23:
+            case API_REMOTE_ENABLE:
                 pch = strtok (NULL, FS);
                 logg("web:REM_EN=" + String(atoi(pch)));
                 setState(REMOTE_ENABLE, atoi(pch));
                 break;
-            case 24:
+            case API_REMOTE_REQUEST:
                 pch = strtok (NULL, FS);
                 logg("web:REM_CTRL=" + String(atoi(pch)));
-                setState(REMOTE_CONTROL, atoi(pch));
+                setState(REMOTE_REQUEST, atoi(pch));
                 break;
-            case 25:
+            case API_VBATT:
                 pch = strtok (NULL, FS);
                 logg("web:VBATT=" + String(atoi(pch)));
                 setBatt(atoi(pch));

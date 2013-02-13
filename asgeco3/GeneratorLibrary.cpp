@@ -24,9 +24,10 @@
 #include "LocalLibrary.h"
 
 // Code
-int engineState      = 0;
-long engineStartTime = 0;
-
+unsigned int engineState    = 0;
+long engineStartTime        = 0;
+long waitStartTime          = 0;
+float initialCurrent        = 0;
 
 
 boolean getState(byte b){
@@ -291,6 +292,12 @@ void setUpPinMode(){
     pinMode(batteryBankPin, INPUT);
     pinMode(oilSensorPin, INPUT); digitalWrite (oilSensorPin, HIGH); // enable pullup resistor
 
+    setState(MANU_ENABLE, 1);
+    
+    Serial.println(ES_REQ_MANU, HEX);
+    Serial.println(ES_REST_REMT_MANU_AUTO, HEX);
+
+
 }
 
 void updateStates(){
@@ -299,12 +306,127 @@ void updateStates(){
     setState(VALVE,getValve());
     setState(MAINS,getMains());
     setState(STARTER,getStarter());
-    setState(MANU_CONTROL,getAux());
+    setState(MANU_REQUEST,getAux());
     if (past != engineState)
-        logg(String("New: ") + String(engineState));
+        logg(String("New: 0x") + String(engineState, HEX));
+}
+
+/*
+ 
+ A Valid Request is a request which is accompanied with an enabled pin. So MANU_REQUEST set to high,
+ is not valid unless MANU_ENABLE is also set.
+ 
+ Returns true only if there is an enabled AND requested pin
+ */
+boolean isValidRequest(){
+    if (((getState(MANU_ENABLE)&getState(MANU_REQUEST)) == 0) &&
+        ((getState(REMOTE_ENABLE)&getState(REMOTE_REQUEST)) == 0) &&
+        ((getState(AUTO_ENABLE)&getState(AUTO_REQUEST)) == 0))
+        return false;
+    else return true;
+}
+
+void setWaiting(byte b){
+    if (b == 1) {
+        waitStartTime = millis();
+        setState(WAITING,1);
+    } else {
+        waitStartTime = 0;
+        setState(WAITING,0);
+    }
+}
+
+
+float readCurrent(){
+    int buf = 10;
+    int sensorValue = 0;
+    for(int i=0;i<buf;i++) sensorValue += analogRead(starterCurrentPin);
+    return sensorValue/buf; // take an average of buf readings.
+    
+}
+
+/*
+ increases attempts. Every time the engine fails to start, an attempt is made, and this counter is increased.
+ 
+ Timeout is encoded in 2 bits: TIMEOUT and TIMEOUT +1, for total of 4 attempts.
+ */
+void increaseAttempts(){
+    byte a = getAttempts();
+    a++;  // now the value is in a, and we can increment it.
+    setAttempts(a);
+    if (a == 3) {
+        logg("FATAL after 4 attempts");
+        setState(FATAL, true);
+    }
 }
 
 
 void Generator(){
     updateStates();
+
+    if ( ((engineState & (compl ES_ALL_REQ_ENABLED)) == 0) && ! isValidRequest()) {
+    // we don't have a valid request AND all other pins are 0, then we are here.
+            // do nothing, just wait for state to change
+            Serial.println("Resting");
+    
+    } else if ((engineState & (compl ES_REQ_NOT_MANU)) == ES_REQ_MANU){
+        // NOTting the auto and remt bits will set them to 0, hence allowing them to be ignored.
+        // There has been a valid manual request to start
+        Serial.println("MAN START request");
+        setValve(1);
+        
+    } else if ((engineState & (compl ES_REQ_NOT_REMT)) == ES_REQ_REMT){
+        // NOTting the auto and remt bits will set them to 0, hence allowing them to be ignored.
+        // There has been a valid manual request to start
+        Serial.println("REMT START request");
+        
+        
+    } else if ((engineState & (compl ES_REQ_NOT_AUTO)) == ES_REQ_AUTO){
+        // NOTting the auto and remt bits will set them to 0, hence allowing them to be ignored.
+        // There has been a valid manual request to start
+        Serial.println("AUTO START request");
+        
+        
+    } else if (isValidRequest() && (engineState & (compl ES_ALL_REQ_ENABLED) == ES_VALVE_OPEN)){
+        Serial.println("Valve open.");
+        setStarter(1);
+        setWaiting(1);
+        initialCurrent = readCurrent();
+    } else if ((isValidRequest() & getState(STARTER)) == 1){
+        Serial.println("Starter running.");
+        if (initialCurrent - readCurrent() > CURRENT_THRESHOLD) {
+            logg("Dropped");
+            setStarter(0);
+            setWaiting(0);
+        } else if (millis() - waitStartTime > STARTER_TIMEOUT ) {
+            logg("Timeout");
+            setStarter(0);
+            setWaiting(0);
+            increaseAttempts();
+            setWaiting(1); // for timeout counter
+        }
+    } else if ( ((! isValidRequest()) & getState(STARTER)) == 1){
+        Serial.println("Starter should not be running");
+        setStarter(0);
+    } else if ( (getAttempts() > 0 ) && (engineState & ES_TIMEOUT_MASK == ES_WAITING_ONLY)){
+        // starting timed out. Waiting some time before trying again
+        if (millis() - waitStartTime > SLEEP_TIMEOUT) {
+            setWaiting(0);
+        }
+    } else if (isValidRequest() && (engineState & ES_WARMUP_MASK == ES_ENG_VALVE)){
+        // Engine is running, need to warm up
+        setWaiting(1);
+        setState(WARMINGUP, 1);
+    } else if (isValidRequest() && (engineState & ES_WARMUP_MASK == ES_WARMINGUP)){
+        // Now we are warming up
+        if (millis() - waitStartTime > WARM_COOL_INTERVAL) {
+            setWaiting(0);
+        }
+    } else if (isValidRequest() && (engineState & ES_WARMUP_MASK == ES_WARMEDUP)){
+        // Engine warmed up, ready for Mains.
+        setState(WARMINGUP, 0);
+        setMains(1);
+    }
+
+
 }

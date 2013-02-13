@@ -51,7 +51,7 @@
 #define relayCH2Pin        A5 //unused
 
 /*
- Engine States
+ Engine State bits
  */
 #define ENGINE          0
 #define WARMINGUP       1
@@ -59,12 +59,12 @@
 #define TIMEOUTS        3 // uses 2 bits
 
 #define MANU_ENABLE     5 // when set, isAUXON() returns false all the time.
-#define MANU_CONTROL    6
+#define MANU_REQUEST    6
 #define REMOTE_ENABLE   7
 
-#define REMOTE_CONTROL  8
+#define REMOTE_REQUEST  8
 #define AUTO_ENABLE     9
-#define AUTO_CONTROL    10
+#define AUTO_REQUEST    10
 #define STARTER         11
 
 #define VALVE           12
@@ -72,9 +72,39 @@
 #define WAITING         14
 #define FATAL           15
 
-#define EEPROMINDEX     0
+/* 
+ Engine state names
+ */
 
+#define REST_ONLY               0x0000
+#define REST_MANU_ONLY          0x0020
+#define REST_AUTO_ONLY          0x0200
+#define REST_REMT_ONLY          0x0080
+#define REST_MANU_AUTO          0x0220
+#define REST_REMT_MANU          0x00A0
+#define REST_REMT_AUTO          0x0280
+#define ES_REST_REMT_MANU_AUTO  0x02A0
+#define ES_REST_ALL_ENABLED     0x07E0
+#define ES_REQ_MANU             0x0060 // manu enabled + manu request
+#define ES_REQ_NOT_MANU         0x0780 // the complement of ES_REQ_MANU only of enable/request bits
+#define ES_REQ_REMT             0x0180 // remote enabled + remote request
+#define ES_REQ_NOT_REMT         0x0660 // remote enabled + remote request
+#define ES_REQ_AUTO             0x0600 // auto enabled + auto request
+#define ES_REQ_NOT_AUTO         0x01E0 // auto enabled + auto request
+#define ES_ALL_REQ_ENABLED      0x07E0 // all req + enable set to 1
+#define ES_VALVE_OPEN           0x1000
+#define ES_TIMEOUT_MASK         0xE807 //ENG,WARM,COOL,STARTER,MAINS,WAITING,FATAL
+#define ES_WAITING_ONLY         0x4000 //WAITING
+#define ES_ENG_VALVE            0x1001
+#define ES_WARMUP_MASK          0xF807 //all but timouts and controls
+#define ES_WARMINGUP            0x5003 //ENG, WARM, VALVE, WAITING
+#define ES_WARMEDUP             0x1003
 
+#define EEPROMINDEX             0
+#define CURRENT_THRESHOLD       200
+#define STARTER_TIMEOUT         7000    // in ms timeout for starter.
+#define SLEEP_TIMEOUT           20000   // in ms time to wait between attempts.
+#define WARM_COOL_INTERVAL      60000   // in ms interval to wait for warm up/cool down
 
 boolean getState(byte b);
 void setState(byte b, byte s);
