@@ -63,8 +63,12 @@ void setEngine(byte i){
 }
 
 byte getAttempts(){
-    byte a = engineState >> TIMEOUTS; // extract the value of attempts from engineState
-    a &= (1<<(2+1))-1;         // leaves alone the lowest 2 bits of x; all higher bits set to 0.
+//    byte a = engineState >> TIMEOUTS; // extract the value of attempts from engineState
+//    a &= (1<<(2+1))-1;         // leaves alone the lowest 2 bits of x; all higher bits set to 0.
+    byte a = 0;
+    bitWrite(a, 0, bitRead(engineState, TIMEOUTS+0));
+    bitWrite(a, 1, bitRead(engineState, TIMEOUTS+1));
+    
     return a;
 }
 
@@ -129,9 +133,9 @@ void setTotalRunSecs(long secs){
  => Vin = Vout * 9.51
  
  */
-int getBatt(){
+unsigned int getBatt(){
     // something wrong here: value seems to overflow.
-    int vb = readVpin() * getVconv() / 1000;
+    unsigned int vb = readVpin() * getVconv() / 1000;
     vb = round(vb / 100.0);
     return (vb*100);
 }
@@ -368,14 +372,12 @@ void increaseAttempts(){
 
 
 void updateStates(){
-    if(getState(ENGINE)        != getEngine()){
-        setState(ENGINE,getEngine());
-        if (getState(ENGINE) == ON) // engine just started: start counter
-            engineStartTime = millis();
-        else {
-            logOnTime();
-            engineStartTime = 0;
-        }
+    setState(ENGINE,getEngine());
+    if (getState(ENGINE) == ON) // engine just started: start counter
+        engineStartTime = millis();
+    else { //engine just shut down
+        logOnTime();
+        engineStartTime = 0;
     }
     //    if(getState(VALVE)         != getValve())    setState(VALVE,getValve());
     //    if(getState(MAINS)         != getMains())    setState(MAINS,getMains());
@@ -395,39 +397,64 @@ void updateStates(){
  This state also takes into account state 10a in state diagram.
  */
 byte isState10(){
-    return ((engineState & ES_NO_CTRL_MASK) == 0) && ! isValidRequest();
+    return ((engineState & ES_NOTO_CTRL_MASK) == 0) && ! isValidRequest();
 }
 
 /*
  Engine not running, but request to start rcvd.
  */
 byte isState11(){
-    return ((engineState & ES_NO_CTRL_MASK) == 0) && isValidRequest();
+    return ((engineState & ES_NOTO_CTRL_MASK) == 0) && isValidRequest();
 }
 
 /*
- Engine not running, request, valve open.
+ Engine not running, request, valve open, timeouts accepted (i.e. ignored)
  */
 byte isState12(){
-    return (isValidRequest() && ((engineState & ES_NO_CTRL_MASK) == ES_VLV));
+    return (isValidRequest() && ((engineState & ES_NOTO_CTRL_MASK) == ES_VLV));
+}
+
+/*
+ Engine not running, request lost, valve open.
+ */
+byte isState120(){
+    return (!isValidRequest() && ((engineState & ES_NOTO_CTRL_MASK) == ES_VLV));
 }
 
 /*
  Engine not running, request, valve, starter, waiting.
  */
 byte isState13(){
-    return (isValidRequest() && ((engineState & ES_NO_CTRL_MASK) == ES_VLV_STR_WAIT));
+    return (isValidRequest() && ((engineState & ES_NOTO_CTRL_MASK) == ES_VLV_STR_WAIT));
+}
+
+/*
+ Engine not running, request lost, valve, starter, waiting.
+ */
+byte isState130(){
+    return (!isValidRequest() && ((engineState & ES_NOTO_CTRL_MASK) == ES_VLV_STR_WAIT));
 }
 
 /*
  This is a transition state in which starter was just shut down.
  
  TRIGGER: STATE13 if current dropped
-
+ 
  Engine not running, request, valve, waiting.
  */
 byte isState14(){
     return (isValidRequest() && ((engineState & ES_NO_CTRL_MASK) == ES_VLV_WAIT));
+}
+
+/*
+ This is a transition state in which starter was just shut down.
+ 
+ TRIGGER: request drop
+ 
+ Engine not running, request lost, valve, waiting.
+ */
+byte isState140(){
+    return (!isValidRequest() && ((engineState & ES_NO_CTRL_MASK) == ES_VLV_WAIT));
 }
 
 /*
@@ -439,6 +466,17 @@ byte isState14(){
  */
 byte isState15(){
     return (isValidRequest() && ((engineState & ES_NO_CTRL_MASK) == ES_VLV_WAIT_ENG));
+}
+
+/*
+ This is a transition state arrived by the engine starting up.
+ 
+ TRIGGER: request drop
+ 
+ Engine, request lost, valve, waiting.
+ */
+byte isState150(){
+    return (! isValidRequest() && ((engineState & ES_NO_CTRL_MASK) == ES_VLV_WAIT_ENG));
 }
 
 /*
@@ -454,6 +492,17 @@ byte isState16(){
 }
 
 /*
+ This is a transition state in which the engine just started up and request was lost.
+ 
+ TRIGGER: request drop
+ 
+ Engine, request lost, valve, warming.
+ */
+byte isState160(){
+    return (!isValidRequest() && ((engineState & ES_NO_CTRL_MASK) == ES_VLV_ENG_WARM));
+}
+
+/*
  This is a resting state, in which the engine warms up.
  
  TRIGGER: STATE16
@@ -462,6 +511,17 @@ byte isState16(){
  */
 byte isState17(){
     return (isValidRequest() && ((engineState & ES_NO_CTRL_MASK) == ES_VLV_ENG_WARM_WAIT));
+}
+
+/*
+ This is a transition state, in which the request was dropped while engine warms up.
+ 
+ TRIGGER: request drop
+ 
+ Engine, request lost, valve, warming, waiting.
+ */
+byte isState170(){
+    return (!isValidRequest() && ((engineState & ES_NO_CTRL_MASK) == ES_VLV_ENG_WARM_WAIT));
 }
 
 /*
@@ -517,7 +577,7 @@ byte isState220(){
  Engine, valve, cooling.
  */
 byte isState23(){
-    return (!isValidRequest() && ((engineState & ES_NO_CTRL_MASK) == ES_VLV_COOL));
+    return (!isValidRequest() && ((engineState & ES_NO_CTRL_MASK) == ES_VLV_ENG_COOL));
 }
 
 /*
@@ -528,7 +588,7 @@ byte isState23(){
  Engine, valve, cooling.
  */
 byte isState230(){
-    return (isValidRequest() && ((engineState & ES_NO_CTRL_MASK) == ES_VLV_COOL));
+    return (isValidRequest() && ((engineState & ES_NO_CTRL_MASK) == ES_VLV_ENG_COOL));
 }
 
 /*
@@ -551,6 +611,17 @@ byte isState24(){
  */
 byte isState240(){
     return (isValidRequest() && ((engineState & ES_NO_CTRL_MASK) == ES_VLV_ENG_COOL_WAIT));
+}
+
+/*
+ This is a transition state, in which the engine prepares to shut down.
+ 
+ TRIGGER: STATE24
+ 
+ Engine, waiting.
+ */
+byte isState241(){
+    return (!isValidRequest() && ((engineState & ES_NO_CTRL_MASK) == ES_ENG_WAIT));
 }
 
 /*
@@ -577,18 +648,6 @@ byte isState250(){
 }
 
 /*
- This is a transition state, starter timed out.
- 
- TRIGGER: STATE13
- 
- Request, valve, timeout.
- */
-byte isState51(){
-    return (isValidRequest() && (getAttempts()>0) &&
-            ((engineState & ES_NOTO_CTRL_MASK) == ES_VLV));
-}
-
-/*
  This is a resting state, waiting for resting period before trying again.
  
  TRIGGER: STATE51
@@ -601,21 +660,9 @@ byte isState52(){
 }
 
 /*
- This is a state, cranking engine attempt N (1<N<3).
- 
- TRIGGER: STATE52
- 
- Request, valve, timeout, wait, starter.
- */
-byte isState53(){
-    return (isValidRequest() && (getAttempts()>0) &&
-            ((engineState & ES_NOTO_CTRL_MASK) == ES_VLV_WAIT));
-}
-
-/*
  This is a resting state, we are dead.
  
- TRIGGER: STATES 13, 53
+ TRIGGER: STATES 13
  
  FATAL and anything else.
  */
@@ -627,79 +674,152 @@ byte isState90(){
 void Generator(){
     updateStates();
 
-    if (isState0()) {
+    if (isState10()) {
         // do nothing, just wait for state to change
-    } else if (isState1()){
+
+    } else if (isState11()){
         // There has been a valid manual request to start
-        logg("MANU REQ ON");
+        logg("S11");
         setValve(OPEN);
-    } else if (isState2()){
-        // There has been a valid remote request to start
-        logg("REMT REQ ON");
-        setValve(OPEN);
-    } else if (isState3()){
-        // There has been a valid auto request to start
-        logg("AUTO REQ ON");
-        setValve(OPEN);
-    } else if (isState4()){
-        logg("Valve open.");
+
+    } else if (isState12()){
+        logg("S12");
         setStarter(ON);
         setWaiting(ON);
         initialCurrent = readCurrent();
-    } else if (isState5()){
-        logg("Starter running.");
+
+    } else if (isState120()){
+        logg("S120");
+        setValve(CLOSE);
+
+    } else if (isState13()){
+        logg("S13:Starter running.");
         if (initialCurrent - readCurrent() > CURRENT_THRESHOLD) {
             logg("Dropped");
             setStarter(OFF);
-            setWaiting(OFF);
+            setAttempts(0);
         } else if (millis() - waitStartTime > STARTER_TIMEOUT ) {
             logg("Timeout");
             setStarter(OFF);
             setWaiting(OFF);
+            setWaiting(ON); // reset waiting timer for S52
             increaseAttempts();
-            setWaiting(ON); // for timeout counter
+            logg(String("TO: ") + String(getAttempts()));
+            if (getAttempts() >= 3) setState(FATAL, ON);
         }
-    } else if (isState6()){
-        logg("Starter should not be running");
+    } else if (isState130()){
+        logg("S130");
         setStarter(OFF);
-    } else if (isState7()){
-        // starting timed out. Waiting some time before trying again
-        if (millis() - waitStartTime > SLEEP_TIMEOUT) {
-            setWaiting(OFF);
-        }
-    } else if (isValidRequest() && ((engineState & ES_TO_CONTROL_MASK) == ES_ENG_RUN_COLD)){
+        setValve(OFF);
+        setWaiting(OFF);
+
+    } else if (isState14()){
+        logg("S14");
+
+    } else if (isState140()){
+        logg("S140");
+        setValve(CLOSE);
+        setWaiting(OFF);
+
+    } else if (isState15()){
+        logg("S15");
         // Engine is running, need to warm up
-        setWaiting(ON);
+        // engineStartTime is set automatically by updateStatus.
+        setWaiting(OFF);
         setState(WARMINGUP, ON);
-    } else if (isValidRequest() && ((engineState & ES_TO_CONTROL_MASK) == ES_WARMINGUP)){
+
+    } else if (isState150()){
+        logg("S150");
+        setValve(OFF);
+        setWaiting(OFF);
+
+    } else if (isState16()){
+        logg("S16");
+        setWaiting(ON);
+
+    } else if (isState160()){
+        logg("S160");
+        setValve(OFF);
+        setState(WARMINGUP, OFF);
+
+    } else if (isState17()){
         // Now we are warming up
         if (millis() - waitStartTime > WARM_COOL_INTERVAL) {
+            logg("S17");
             setWaiting(OFF);
+            setState(WARMINGUP, OFF);
+            setMains(ON);
         }
-    } else if (isValidRequest() && ((engineState & ES_TO_CONTROL_MASK) == ES_WARMEDUP)){
-        // Engine warmed up, ready for Mains.
+        
+    } else if (isState170()){
+        logg("S170");
+        setValve(OFF);
         setState(WARMINGUP, OFF);
-        setMains(ON);
-    } else if (isValidRequest() && ((engineState & ES_TO_CONTROL_MASK) == ES_FULL_ON)){
-        // Now we are full on. Stay here until interrupted.
-    } else if (! isValidRequest() && ((engineState & ES_TO_CONTROL_MASK) == ES_FULL_ON)){
+        setWaiting(OFF);
+
+    } else if (isState20()){
+        // Generator full ON. Wait for request to drop.
+
+    } else if (isState21()){
+        logg("S21");
         // Received request to stop
         setMains(OFF);
-    } else if (! isValidRequest() && ((engineState & ES_TO_CONTROL_MASK) == ES_ENG_RUN_COLD)){
-        // Engine warm, let's cool down
-        setWaiting(ON);
         setState(COOLINGDOWN, ON);
-    } else if (! isValidRequest() && ((engineState & ES_TO_CONTROL_MASK) == ES_COOLINGDN)){
+
+    } else if (isState22()){
+        logg("S22");
+        // Do nothing. Wait for valve to close.
+
+    } else if (isState220()){
+        logg("S220");
+        setMains(ON);
+
+    } else if (isState23()){
+        logg("S23");
+        setWaiting(ON);
+
+    } else if (isState230()){
+        logg("S230");
+        setState(COOLINGDOWN, OFF);
+        setMains(ON);
+    
+    } else if (isState24()){
         // Now we are cooling off
         if (millis() - waitStartTime > WARM_COOL_INTERVAL) {
+            logg("S24");
+            setState(COOLINGDOWN, OFF);
+            setValve(CLOSE);
             setWaiting(OFF);
         }
-    } else if (! isValidRequest() && ((engineState & ES_TO_CONTROL_MASK) == ES_COOLEDDN)){
-        // Engine cooled down ready for shutdown.
+ 
+    } else if (isState240()){
+        // go back to State 20
         setState(COOLINGDOWN, OFF);
-        setValve(CLOSE);
-    } else if (! isValidRequest() && ((engineState & ES_TO_CONTROL_MASK) == ES_SHUTTINGDN)){
-        // This should be a very brief state, in which there is no request to start, and engine is still running. Maybe disable request controls here?
+        setWaiting(OFF);
+        setMains(ON);
+    
+    } else if (isState241()){
+        // dangling state. Fix:
+        setWaiting(OFF);
+    
+    } else if (isState25()){
+        logg("S25");
+        // do nothing, just wait for engine to turn off
+    
+    } else if (isState250()){
+        logg("S250");
+        // freeze system for a couple of secends, engine is shutting down.
+        delay(2000);
+
+    } else if (isState52()){
+        logg("S52");
+        // starting timed out. Waiting some time before trying again
+        if (millis() - waitStartTime > SLEEP_TIMEOUT) {
+            setWaiting(OFF); //this should throw us back to state 12.
+        }
+
+    } else if (isState90()){
+        logg("FATAL");
     } else {
         logg("ERR:0x" + String(engineState, HEX));
     }

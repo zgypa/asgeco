@@ -76,25 +76,26 @@
  Engine state names
  */
 
-#define REST_ONLY               0x0000
-#define REST_MANU_ONLY          0x0020
-#define REST_AUTO_ONLY          0x0200
-#define REST_REMT_ONLY          0x0080
-#define REST_MANU_AUTO          0x0220
-#define REST_REMT_MANU          0x00A0
-#define REST_REMT_AUTO          0x0280
-#define ES_REST_REMT_MANU_AUTO  0x02A0
-#define ES_REQ_MANU             0x0060 // manu enabled + manu request
-#define ES_REQ_NOT_MANU         0x0780 // the complement of ES_REQ_MANU only of enable/request bits
-#define ES_REQ_REMT             0x0180 // remote enabled + remote request
-#define ES_REQ_NOT_REMT         0x0660 // remote enabled + remote request
-#define ES_REQ_AUTO             0x0600 // auto enabled + auto request
-#define ES_REQ_NOT_AUTO         0x01E0 // auto enabled + auto request
-#define ES_ALL_REQ_ENABLED      0x07E0 // all req + enable set to 1
-#define ES_WAITING_ONLY         0x4000 //WAITING
-#define ES_ENG_RUN_COLD         0x1001 //ENG, VALVE
+//#define REST_ONLY               0x0000
+//#define REST_MANU_ONLY          0x0020
+//#define REST_AUTO_ONLY          0x0200
+//#define REST_REMT_ONLY          0x0080
+//#define REST_MANU_AUTO          0x0220
+//#define REST_REMT_MANU          0x00A0
+//#define REST_REMT_AUTO          0x0280
+//#define ES_REST_REMT_MANU_AUTO  0x02A0
+//#define ES_REQ_MANU             0x0060 // manu enabled + manu request
+//#define ES_REQ_NOT_MANU         0x0780 // the complement of ES_REQ_MANU only of enable/request bits
+//#define ES_REQ_REMT             0x0180 // remote enabled + remote request
+//#define ES_REQ_NOT_REMT         0x0660 // remote enabled + remote request
+//#define ES_REQ_AUTO             0x0600 // auto enabled + auto request
+//#define ES_REQ_NOT_AUTO         0x01E0 // auto enabled + auto request
+//#define ES_ALL_REQ_ENABLED      0x07E0 // all req + enable set to 1
+//#define ES_WAITING_ONLY         0x4000 //WAITING
+//#define ES_ENG_RUN_COLD         0x1001 //ENG, VALVE
 
 #define ES_ENG                  0x0001
+#define ES_ENG_WAIT             0x4001
 #define ES_VLV                  0x1000
 #define ES_VLV_ENG              0x1001
 #define ES_VLV_COOL             0x1005
@@ -104,6 +105,7 @@
 #define ES_VLV_ENG_WARM         0x1003
 #define ES_VLV_ENG_WARM_WAIT    0x5003
 #define ES_VLV_ENG_COOL_WAIT    0x5005
+#define ES_VLV_ENG_COOL         0x1005
 #define ES_VLV_ENG_MAINS        0x3001
 
 #define ES_NOTIMEOUT_MASK       0xFFE7 //use this to filter out timeouts
@@ -119,10 +121,10 @@
 #define WARM_COOL_INTERVAL      60000   // in ms interval to wait for warm up/cool down
 
 
-#define ON  1
-#define OPEN 1
-#define CLOSE 0
-#define OFF 0
+#define ON      1
+#define OPEN    1
+#define CLOSE   0
+#define OFF     0
 
 boolean getState(byte b);
 void setState(byte b, byte s);
@@ -150,7 +152,7 @@ long getEngineStartTime();
 unsigned long getTotalRunSecs();
 void setTotalRunSecs(long secs);
 
-int getBatt();
+unsigned int getBatt();
 void setBatt(int vbatt);
 
 long readVcc();

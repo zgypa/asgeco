@@ -76,10 +76,10 @@ void printState(EthernetClient ec) {
     ec.print(c);
     ec.print(getTotalRunSecs(),DEC);//19
     ec.print(c);
-//    if(isEngineRunning())
-//        ec.print((millis() - getEngineStartTime())/1000);//20
-//    else
-//        ec.print(0);
+    if(getState(ENGINE))
+        ec.print((millis() - getEngineStartTime())/1000);//20
+    else
+        ec.print(0);
     ec.print(c);
     ec.print(getGENON());//21
     ec.print(c);
