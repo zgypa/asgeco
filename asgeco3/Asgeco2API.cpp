@@ -28,7 +28,7 @@
 
 // Wiznet prefix is 00:08:DC
 byte mac[] = { 0x00, 0x08, 0xDC, 0xB7, 0xD6, 0xDA }; //generated with http://www.miniwebtool.com/mac-address-generator/
-IPAddress ip(10,1,11,80);
+IPAddress ip(10,1,11,81);
 EthernetServer server(80);
 
 // Code
@@ -68,7 +68,7 @@ void printState(EthernetClient ec) {
     ec.print(c);
     ec.print(getState(FATAL));//15
     ec.print(c);
-    ec.print(0);//16
+    ec.print(getState(AUTO_REQUEST));//16
     ec.print(c);
     ec.print(getState(AUTO_ENABLE));//17
     ec.print(c);
@@ -173,12 +173,12 @@ void writeStates(char clientline[]){
             case API_ONSOLENOID:
                 pch = strtok (NULL, FS);
                 logg("web:ONSOLENOID=" + String(atoi(pch)));
-//                digitalWrite(onSolenoidPin,atoi(pch));
+                digitalWrite(onSolenoidPin,atoi(pch));
                 break;
             case API_OFFSOLENOID:
                 pch = strtok (NULL, FS);
                 logg("web:OFFSOLENOID=" + String(atoi(pch)));
-//                digitalWrite(offSolenoidPin,atoi(pch));
+                digitalWrite(offSolenoidPin,atoi(pch));
                 break;
             case API_MAINS:
                 pch = strtok (NULL, FS);

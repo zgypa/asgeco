@@ -27,7 +27,7 @@
 unsigned int engineState    = 0;
 long engineStartTime        = 0;
 long waitStartTime          = 0;
-float initialCurrent        = 0;
+int initialCurrent        = 0;
 
 
 boolean getState(byte b){
@@ -228,7 +228,7 @@ void openFuelValve(){
 void closeFuelValve(){
     logg("Closing valve");
     digitalWrite(offSolenoidPin, HIGH);
-    delay(100);
+    delay(300);
     digitalWrite(offSolenoidPin, LOW);
     logg("Valve 0");
 }
@@ -315,9 +315,15 @@ void setUpPinMode(){
  Returns amount logged this time.
  */
 unsigned long logOnTime(){
-    unsigned long thisrun = (millis() - engineStartTime)/1000;
-    EEPROM_writeAnything(EEPROMINDEX, getTotalRunSecs() + thisrun);
-    return thisrun;
+    unsigned long logthis = (getTotalRunSecs() + (millis() - engineStartTime)/1000);
+    EEPROM_writeAnything(EEPROMINDEX, logthis);
+    unsigned long ee;
+    EEPROM_readAnything(EEPROMINDEX, ee);
+    if (logthis != ee)
+        logg("EEPROM CHK FAIL");
+    else
+        logg(String("Logged ") + String(logthis));
+    return logthis;
 }
 
 /*
@@ -346,9 +352,9 @@ void setWaiting(byte b){
 }
 
 
-float readCurrent(){
-    int buf = 10;
-    int sensorValue = 0;
+int readCurrent(){
+    const byte buf = 10;
+    unsigned int sensorValue = 0;
     for(int i=0;i<buf;i++) sensorValue += analogRead(starterCurrentPin);
     return sensorValue/buf; // take an average of buf readings.
     
@@ -372,17 +378,17 @@ void increaseAttempts(){
 
 
 void updateStates(){
-    setState(ENGINE,getEngine());
-    if (getState(ENGINE) == ON) // engine just started: start counter
-        engineStartTime = millis();
-    else { //engine just shut down
-        logOnTime();
-        engineStartTime = 0;
+    if(getState(ENGINE) != getEngine()){
+        setState(ENGINE,getEngine());
+        if (getState(ENGINE) == ON) {   // engine just started
+            engineStartTime = millis(); // start counter
+            setAttempts(0);             // if running, attempts have to be reset
+        }
+        else {
+            logOnTime();
+            engineStartTime = 0;
+        }
     }
-    //    if(getState(VALVE)         != getValve())    setState(VALVE,getValve());
-    //    if(getState(MAINS)         != getMains())    setState(MAINS,getMains());
-    //    if(getState(STARTER)       != getStarter())  setState(STARTER,getStarter());
-    //    if(getState(MANU_REQUEST)  != getAux())      setState(MANU_REQUEST,getAux());
     setState(VALVE,getValve());
     setState(MAINS,getMains());
     setState(STARTER,getStarter());
@@ -625,6 +631,17 @@ byte isState241(){
 }
 
 /*
+ This is a transition state, funny state. Probably engine shut off while cooling.
+ 
+ TRIGGER: external
+ 
+ cooling, waiting.
+ */
+byte isState242(){
+    return (!isValidRequest() && ((engineState & ES_NO_CTRL_MASK) == ES_WAIT_COOL));
+}
+
+/*
  This is a transition state, in which the engine has been shut off, but is still running.
  
  TRIGGER: STATE24
@@ -686,6 +703,7 @@ void Generator(){
         logg("S12");
         setStarter(ON);
         setWaiting(ON);
+        delay(300); // give time for the system to draw current.
         initialCurrent = readCurrent();
 
     } else if (isState120()){
@@ -694,6 +712,9 @@ void Generator(){
 
     } else if (isState13()){
         logg("S13:Starter running.");
+        logg(String(initialCurrent));
+        logg(String(readCurrent()));
+        logg(String(initialCurrent - readCurrent()));
         if (initialCurrent - readCurrent() > CURRENT_THRESHOLD) {
             logg("Dropped");
             setStarter(OFF);
@@ -801,7 +822,12 @@ void Generator(){
     } else if (isState241()){
         // dangling state. Fix:
         setWaiting(OFF);
-    
+        
+    } else if (isState242()){
+        // dangling state. Fix:
+        setWaiting(OFF);
+        setState(COOLINGDOWN, OFF);
+        
     } else if (isState25()){
         logg("S25");
         // do nothing, just wait for engine to turn off

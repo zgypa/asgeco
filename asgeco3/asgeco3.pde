@@ -66,6 +66,7 @@ void setup() {
     setUpAPI();
     Syslog.setLoghost(loghost);
     setUpPinMode();
+    logg(ASGECO);
 }
 
 ///

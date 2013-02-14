@@ -605,10 +605,12 @@ endif
 # Rules
 # ----------------------------------
 #
-all: 		info message_all clean compile reset raw_upload serial
+# all: 		info message_all clean compile reset raw_upload serial
+all: 		info message_all clean compile reset raw_upload
 		@echo "==== All done ==== "
 
-fast: 		info message_fast changed compile reset raw_upload serial
+# fast: 		info message_fast changed compile reset raw_upload serial
+fast: 		info message_fast changed compile reset raw_upload
 		@echo "==== Fast done ==== "
 
 build: 		info message_build clean compile

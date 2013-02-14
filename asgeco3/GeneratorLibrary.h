@@ -1,7 +1,7 @@
 ///
 /// @file	GeneratorLibrary.h 
 /// @brief	Library header
-/// @details	<#details#>
+/// @details	This is the 
 /// @n	
 /// @n @b	Project asgeco3
 /// @n @a	Developed with [embedXcode](http://embedXcode.weebly.com)
@@ -9,7 +9,7 @@
 /// @author	Antonio Magni
 /// @author	Antonio Magni
 /// @date	10/02/13 11:07
-/// @version	<#version#>
+/// @version	2.1
 /// 
 /// @copyright	© Antonio Magni, 2013
 /// @copyright	CC = BY NC SA
@@ -76,24 +76,6 @@
  Engine state names
  */
 
-//#define REST_ONLY               0x0000
-//#define REST_MANU_ONLY          0x0020
-//#define REST_AUTO_ONLY          0x0200
-//#define REST_REMT_ONLY          0x0080
-//#define REST_MANU_AUTO          0x0220
-//#define REST_REMT_MANU          0x00A0
-//#define REST_REMT_AUTO          0x0280
-//#define ES_REST_REMT_MANU_AUTO  0x02A0
-//#define ES_REQ_MANU             0x0060 // manu enabled + manu request
-//#define ES_REQ_NOT_MANU         0x0780 // the complement of ES_REQ_MANU only of enable/request bits
-//#define ES_REQ_REMT             0x0180 // remote enabled + remote request
-//#define ES_REQ_NOT_REMT         0x0660 // remote enabled + remote request
-//#define ES_REQ_AUTO             0x0600 // auto enabled + auto request
-//#define ES_REQ_NOT_AUTO         0x01E0 // auto enabled + auto request
-//#define ES_ALL_REQ_ENABLED      0x07E0 // all req + enable set to 1
-//#define ES_WAITING_ONLY         0x4000 //WAITING
-//#define ES_ENG_RUN_COLD         0x1001 //ENG, VALVE
-
 #define ES_ENG                  0x0001
 #define ES_ENG_WAIT             0x4001
 #define ES_VLV                  0x1000
@@ -107,6 +89,7 @@
 #define ES_VLV_ENG_COOL_WAIT    0x5005
 #define ES_VLV_ENG_COOL         0x1005
 #define ES_VLV_ENG_MAINS        0x3001
+#define ES_WAIT_COOL            0x4004
 
 #define ES_NOTIMEOUT_MASK       0xFFE7 //use this to filter out timeouts
 #define ES_NOTO_CTRL_MASK       0xF807 //use this to filter out both timeouts and CTRL
@@ -171,8 +154,6 @@ void closeFuelValve();
 float readVpin();
 
 void setUpPinMode();
-
-void updateStates();
 
 void Generator();
 

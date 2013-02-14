@@ -9,7 +9,7 @@
 /// @author	Antonio Magni
 /// @author	Antonio Magni
 /// @date	10/02/13 11:50
-/// @version	<#version#>
+/// @version	2.1
 /// 
 /// @copyright	© Antonio Magni, 2013
 /// @copyright	CC = BY NC SA
