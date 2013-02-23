@@ -1914,6 +1914,7 @@
 		90536EDA16C6C2360050744E /* Syslog.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Syslog.cpp; sourceTree = "<group>"; };
 		90536EDB16C6C2360050744E /* Syslog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Syslog.h; sourceTree = "<group>"; };
 		90553AD316C6D5E60029F3F1 /* Arduino Duemilanove ATmega328.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = "Arduino Duemilanove ATmega328.xcconfig"; sourceTree = "<group>"; };
+		9079F05616D880CD0049943E /* asgeco2.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = asgeco2.sh; sourceTree = "<group>"; };
 		908F50E816C7A8DE00AC4C1C /* GeneratorLibrary.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GeneratorLibrary.cpp; sourceTree = "<group>"; };
 		908F50E916C7A8DE00AC4C1C /* GeneratorLibrary.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GeneratorLibrary.h; sourceTree = "<group>"; };
 		908F50EC16C7B2FB00AC4C1C /* Asgeco2API.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Asgeco2API.cpp; sourceTree = "<group>"; };
@@ -1940,6 +1941,7 @@
 		9053689516C6C1700050744E /* asgeco3 */ = {
 			isa = PBXGroup;
 			children = (
+				9079F05616D880CD0049943E /* asgeco2.sh */,
 				9053689616C6C1700050744E /* main.cpp */,
 				9053689816C6C1700050744E /* LocalLibrary.cpp */,
 				9053689A16C6C1700050744E /* LocalLibrary.h */,
