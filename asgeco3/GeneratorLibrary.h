@@ -29,7 +29,10 @@
 
 /*
  Pin Assignments
- 
+
+ Available PINS are: (0,1,)2,3,5,6,7,8,9
+ 0 and 1 cannot be used for digital i/o (digitalRead and digitalWrite) if i am also using serial communication (e.g. Serial.begin).
+
  some getter functions use PORTB, PORTC and PORTD, so they would need to get
  adjusted if adjustments are made here.
 
@@ -126,6 +129,8 @@ void setValve(byte i);
 
 byte getMains();
 void setMains(byte i);
+
+byte getOil();
 
 int getVconv();
 void setVconv(int vconv);

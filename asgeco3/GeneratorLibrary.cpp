@@ -27,7 +27,7 @@
 unsigned int engineState    = 0;
 long engineStartTime        = 0;
 long waitStartTime          = 0;
-int initialCurrent        = 0;
+int initialCurrent          = 0;
 
 
 boolean getState(byte b){
@@ -85,6 +85,10 @@ byte getValve(){
 void setValve(byte i){
     if (i) openFuelValve();
     else closeFuelValve();
+}
+
+byte getOil(){
+    return ! getInputPin(oilSensorPin);
 }
 
 byte getMains(){

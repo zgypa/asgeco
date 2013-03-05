@@ -91,6 +91,8 @@ void printState(EthernetClient ec) {
     ec.print(c);
     ec.print(getVconv());//25
     ec.print(c);
+    ec.print(getOil());//26
+    ec.print(c); // this last space is necessary.
 }
 
 void HTTPserver() {
