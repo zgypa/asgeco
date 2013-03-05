@@ -6,11 +6,11 @@ ARDUINO_IP="10.1.11.81"
 FEED_ID="68890"
 API_KEY="ryX-pFwLbjGw7cH2RagB4NeGeAwZVR3EcZWy-Sh52jw"
 
-ping -c 3 ${ARDUINO_IP} > /dev/null
-if [ $? -ne 0 ]; then
-	echo "cosm Updater: ${ARDUINO_IP} is not responding";
-	exit;
-fi
+# ping -c 3 ${ARDUINO_IP} > /dev/null
+# if [ $? -ne 0 ]; then
+# 	echo "cosm Updater: ${ARDUINO_IP} is not responding";
+# 	exit;
+# fi
 
 AWK=
 
@@ -40,7 +40,7 @@ GENOFF=$(echo $STRING | awk '{print $22}')
 REMOTE_ENABLE=$(echo $STRING | awk '{print $23}')
 REMOTE_REQUEST=$(echo $STRING | awk '{print $24}')
 VCONV=$(echo $STRING | awk '{print $25}')
-
+OIL=$(echo $STRING | awk '{print $26}')
 
 echo "STARTER (1/0): ${STARTER}"
 echo "ONSOLENOID (1/0): ${ONSOLENOID}"
@@ -73,6 +73,7 @@ else
 fi
 
 echo "Engine running: ${RUNNING}"
+echo "OIL alarm: ${OIL}"
 
 DATA_BINARY="
 {\n
