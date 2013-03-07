@@ -693,7 +693,6 @@ byte isState90(){
 
 
 void Generator(){
-    updateStates();
 
     if (isState10()) {
         // do nothing, just wait for state to change

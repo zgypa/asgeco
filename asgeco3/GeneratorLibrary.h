@@ -161,5 +161,6 @@ float readVpin();
 void setUpPinMode();
 
 void Generator();
+void updateStates();
 
 #endif
