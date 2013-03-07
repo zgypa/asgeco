@@ -67,6 +67,7 @@ void setup() {
     Syslog.setLoghost(loghost);
     setUpPinMode();
     logg(ASGECO);
+//    setState(MANU_ENABLE, ON);
 }
 
 ///
@@ -76,5 +77,6 @@ void setup() {
 // Add loop code 
 void loop() {
     HTTPserver();
-    Generator();
+    if (getState(AUTO_ENABLE) == ON)
+        Generator();
 }
