@@ -28,12 +28,13 @@
 
 // Wiznet prefix is 00:08:DC
 byte mac[] = { 0x00, 0x08, 0xDC, 0xB7, 0xD6, 0xDA }; //generated with http://www.miniwebtool.com/mac-address-generator/
-IPAddress ip(10,1,11,81);
+IPAddress ip(10,1,16,81);
 EthernetServer server(80);
 
 // Code
 void setUpAPI(){
-    Ethernet.begin(mac, ip);
+//    Ethernet.begin(mac, ip); // use this for static IP
+    Ethernet.begin(mac);     // use this for DHCP
 }
 
 void printState(EthernetClient ec) {

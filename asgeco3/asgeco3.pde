@@ -45,7 +45,7 @@
 #include "Syslog.h"
 #include "GeneratorLibrary.h"
 
-byte loghost[] = { 10,1,11,1 };
+byte loghost[] = { 10,1,16,1 };
 
 
 // Define variables and constants
