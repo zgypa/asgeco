@@ -104,10 +104,11 @@ function upload() {
       --data "$(echo -e ${DATA_BINARY})" \
       --header "X-ApiKey: ${API_KEY}" \
       --verbose \
-      http://api.cosm.com/v2/feeds/${FEED_ID}
+      http://api.cosm.com/v2/feeds/$FEED_ID
 }
 
 if [ "$1" == "up" ]; then upload;
 elif [ "$1" == "start" ]; then start;
 elif [ "$1" == "stop" ]; then stop;
 else status;
+fi;
