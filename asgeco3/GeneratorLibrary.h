@@ -101,7 +101,10 @@
 
 #define ES_NOTIMEOUT_MASK       0xFFE7 //use this to filter out timeouts
 #define ES_NOTO_CTRL_MASK       0xF807 //use this to filter out both timeouts and CTRL
-#define ES_NO_CTRL_MASK         0xF81F //use this to filter out CTRLs
+//#define ES_NO_CTRL_MASK         0xF81F //use this to filter out CTRLs
+// TODO: update these masks according to new MANUAL/AUTO Modes
+
+// I purposely broke the code here, to remind myself to fix these states
 
 
 
