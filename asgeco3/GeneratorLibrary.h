@@ -61,13 +61,18 @@
 #define COOLINGDOWN     2
 #define TIMEOUTS        3 // uses 2 bits
 
-#define MANU_ENABLE     5 // when set, isAUXON() returns false all the time.
+//#define MANU_ENABLE     5 // when set, isAUXON() returns false all the time.
+//#define MANU_REQUEST    6
+//#define REMOTE_ENABLE   7
+//
+//#define REMOTE_REQUEST  8
+#define MODE            5 // when set, isAUXON() returns false all the time.
 #define MANU_REQUEST    6
-#define REMOTE_ENABLE   7
+#define AUTO_REQUEST    7
 
-#define REMOTE_REQUEST  8
-#define AUTO_ENABLE     9
-#define AUTO_REQUEST    10
+#define AUX_STATE       8
+//#define <FREE>        9
+//#define <FREE>        10
 #define STARTER         11
 
 #define VALVE           12
@@ -111,6 +116,8 @@
 #define OPEN    1
 #define CLOSE   0
 #define OFF     0
+#define MANUAL  0
+#define AUTO    1
 
 boolean getState(byte b);
 void setState(byte b, byte s);

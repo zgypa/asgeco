@@ -22,7 +22,6 @@ function status() {
     OFFSOLENOID=$(echo $STRING | awk '{print $4}')
     MAINS=$(echo $STRING | awk '{print $5}')
     MANU_REQUEST=$(echo $STRING | awk '{print $6}')
-    #VPV=$(echo $STRING | awk '{print $6}' | tr -d "\r")
     BATTS=$(echo $STRING | awk '{print $7}')
     VCC=$(echo $STRING | awk '{print $8}')
     ST_CUR=$(echo $STRING | awk '{print $9}')
@@ -30,10 +29,10 @@ function status() {
     WARMINGUP=$(echo $STRING | awk '{print $11}')
     COOLINGDOWN=$(echo $STRING | awk '{print $12}')
     WAITING=$(echo $STRING | awk '{print $13}')
-    MANU_ENABLE=$(echo $STRING | awk '{print $14}')
+    MODE=$(echo $STRING | awk '{print $14}')
     FATAL=$(echo $STRING | awk '{print $15}')
-    LASTAUXSTATE=$(echo $STRING | awk '{print $16}')
-    AUTO_ENABLE=$(echo $STRING | awk '{print $17}')
+    AUTO_REQUEST=$(echo $STRING | awk '{print $16}')
+    AUX_STATE=$(echo $STRING | awk '{print $17}')
     TIMEOUTS=$(echo $STRING | awk '{print $18}')
     SECS_TOT=$(echo $STRING | awk '{print $19}')
     SECS=$(echo $STRING | awk '{print $20}')
@@ -44,26 +43,26 @@ function status() {
     VCONV=$(echo $STRING | awk '{print $25}')
     OIL=$(echo $STRING | awk '{print $26}')
 
-    echo "STARTER (1/0): ${STARTER}"
-    echo "ONSOLENOID (1/0): ${ONSOLENOID}"
-    echo "OFFSOLENOID (1/0): ${OFFSOLENOID}"
-    echo "MAINS (1/0): ${MAINS}"
-    echo "MANU_REQUEST (1/0): ${MANU_REQUEST}"
-    echo "BATT (mV): ${BATTS}"
-    echo "Vcc (mV): ${VCC}"
-    echo "Starter Current (bits): ${ST_CUR}"
-    echo "Engine: ${ENGINE}"
-    echo "Total run timer (secs): ${SECS_TOT}"
+    echo "STARTER (1/0): ........${STARTER}"
+    echo "ONSOLENOID (1/0): .....${ONSOLENOID}"
+    echo "OFFSOLENOID (1/0): ....${OFFSOLENOID}"
+    echo "MAINS (1/0): ..........${MAINS}"
+    echo "MODE (1/0): ...........${MODE}"
+    echo "AUTO_REQUEST (1/0): ...${AUTO_REQUEST}"
+    echo "MANU_REQUEST (1/0): ...${MANU_REQUEST}"
+    echo "AUX_STATE (1/0): ......${AUX_STATE}"
+    echo "BATT (mV): ............${BATTS}"
+    echo "Vcc (mV): .............${VCC}"
+    echo "Starter Current (bits):${ST_CUR}"
+    echo "Engine: ...............${ENGINE}"
+    echo "Total run timer (secs):${SECS_TOT}"
     echo "Engine now on for ${SECS} seconds. Total for $[ ${SECS_TOT} / 60 ] mins."
-    echo "Engine Warming Up: ${WARMINGUP}"
-    echo "Engine Cooling down: ${COOLINGDOWN}"
-    echo "System is waiting: ${WAITING}"
-    echo "Fatal error: ${FATAL}"
-    echo "AUTO_ENABLE is: ${AUTO_ENABLE}, Request: ${AUTO_REQUEST}"
+    echo "Engine Warming Up: ....${WARMINGUP}"
+    echo "Engine Cooling down: ..${COOLINGDOWN}"
+    echo "System is waiting: ....${WAITING}"
+    echo "Fatal error: ..........${FATAL}"
     echo "GENON: ${GENON}  --  GENOFF: ${GENOFF}"
-    echo "Failed startup attempts: ${TIMEOUTS}"
-    echo "MANU_ENABLE is ${MANU_ENABLE}"
-    echo "Remote enabled: ${REMOTE_ENABLE}, Request: ${REMOTE_REQUEST}"
+    echo "Failed startup attempts:${TIMEOUTS}"
     echo "Voltage conversion factor: ${VCONV}"
 
     let $SECS;
@@ -96,8 +95,16 @@ function start(){
 }
 
 function stop(){
-    curl "http://asgeco/?ASGECOv2&17=0&23=0&24=0"
+    curl "http://asgeco/?ASGECOv2&17=0"
+    curl "http://asgeco/?ASGECOv2&24=0"
 }
+
+function choke(){
+    curl "http://asgeco/?ASGECOv2&4=1"
+    curl "http://asgeco/?ASGECOv2&4=0"
+}
+
+
 
 function upload() {
  curl --request PUT \
@@ -110,5 +117,6 @@ function upload() {
 if [ "$1" == "up" ]; then upload;
 elif [ "$1" == "start" ]; then start;
 elif [ "$1" == "stop" ]; then stop;
+elif [ "$1" == "choke" ]; then choke;
 else status;
 fi;

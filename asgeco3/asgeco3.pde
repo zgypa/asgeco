@@ -78,6 +78,5 @@ void setup() {
 void loop() {
     HTTPserver();
     updateStates();
-    if (getState(AUTO_ENABLE) == ON)
-        Generator();
+    Generator();
 }

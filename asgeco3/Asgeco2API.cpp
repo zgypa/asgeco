@@ -37,6 +37,10 @@ void setUpAPI(){
     Ethernet.begin(mac);     // use this for DHCP
 }
 
+/*
+ Please refer to 
+ https://wiki.afm.co/display/CIAP/Asgeco+2.1+firmware+API+%28current%29
+ */
 void printState(EthernetClient ec) {
     char c = ' ';
     ec.print(ASGECO);//1
@@ -49,7 +53,7 @@ void printState(EthernetClient ec) {
     ec.print(c);
     ec.print(bitRead(PORTB,mains1RelayPin-8), DEC);//5
     ec.print(c);
-    ec.print(digitalRead(auxPin), DEC);//6
+    ec.print(getState(MANU_REQUEST));//6
     ec.print(c);
     ec.print(getBatt());//7
     ec.print(c);
@@ -65,13 +69,13 @@ void printState(EthernetClient ec) {
     ec.print(c);
     ec.print(getState(WAITING));//13
     ec.print(c);
-    ec.print(getState(MANU_ENABLE));//14
+    ec.print(getState(MODE));//14
     ec.print(c);
     ec.print(getState(FATAL));//15
     ec.print(c);
     ec.print(getState(AUTO_REQUEST));//16
     ec.print(c);
-    ec.print(getState(AUTO_ENABLE));//17
+    ec.print(digitalRead(auxPin), DEC);//17
     ec.print(c);
     ec.print(getAttempts());//18
     ec.print(c);
@@ -86,9 +90,9 @@ void printState(EthernetClient ec) {
     ec.print(c);
     ec.print(getGENOFF());//22
     ec.print(c);
-    ec.print(getState(REMOTE_ENABLE));//23
+    ec.print(0);//23
     ec.print(c);
-    ec.print(getState(REMOTE_REQUEST));//24
+    ec.print(0);//24
     ec.print(c);
     ec.print(getVconv());//25
     ec.print(c);
@@ -188,10 +192,10 @@ void writeStates(char clientline[]){
                 logg("web:MAINS=" + String(atoi(pch)));
                 setMains(atoi(pch));
                 break;
-            case API_MAN_ENABLE:
+            case API_MODE:
                 pch = strtok (NULL, FS);
-                logg("web:MAN_EN=" + String(atoi(pch)));
-                setState(MANU_ENABLE, atoi(pch));
+                logg("web:MODE=" + String(atoi(pch)));
+                setState(MODE, atoi(pch));
                 break;
             case API_FATAL:
                 pch = strtok (NULL, FS);
@@ -202,11 +206,6 @@ void writeStates(char clientline[]){
                 pch = strtok (NULL, FS);
                 logg("web:MANU_REQ=" + String(atoi(pch)));
                 setState(MANU_REQUEST, atoi(pch));
-                break;
-            case API_AUTO_ENABLE:
-                pch = strtok (NULL, FS);
-                logg("web:AUTO_ENABLE=" + String(atoi(pch)));
-                setState(AUTO_ENABLE, atoi(pch));
                 break;
             case API_TIMEOUTS:
                 pch = strtok (NULL, FS);
@@ -227,16 +226,6 @@ void writeStates(char clientline[]){
                 pch = strtok (NULL, FS);
                 logg("web:GENOFF=" + String(atoi(pch)));
                 setGENOFF(atoi(pch));
-                break;
-            case API_REMOTE_ENABLE:
-                pch = strtok (NULL, FS);
-                logg("web:REM_EN=" + String(atoi(pch)));
-                setState(REMOTE_ENABLE, atoi(pch));
-                break;
-            case API_REMOTE_REQUEST:
-                pch = strtok (NULL, FS);
-                logg("web:REM_CTRL=" + String(atoi(pch)));
-                setState(REMOTE_REQUEST, atoi(pch));
                 break;
             case API_VBATT:
                 pch = strtok (NULL, FS);

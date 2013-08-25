@@ -30,6 +30,10 @@ long waitStartTime          = 0;
 int initialCurrent          = 0;
 
 
+/*
+ Read a single bit from engineState, to find out what the state of 
+ a particular part of the system is.
+ */
 boolean getState(byte b){
 //    if ((engineState >> b ) & 1)
 //        return true;
@@ -237,8 +241,29 @@ void closeFuelValve(){
     logg("Valve 0");
 }
 
+/*
+ See if there has been a request to start or stop the generator, and return 1
+ if there has.
+ 
+ low: switch closed
+ high: switch open
+ 
+ Check for high to low (open to closed) transition of AUX. Return 1 only 
+ when transitioning from high to low.
+ */
 byte getAux(){
-    return getInputPin(auxPin);
+    byte currentPS = getInputPin(auxPin);
+    byte oldPS = getState(AUX_STATE);
+    
+    if (oldPS == 1 && currentPS == 0) {
+        setState(AUX_STATE, currentPS);
+        return 1;
+    }
+    else {
+        setState(AUX_STATE, currentPS);
+        return 0;
+    }
+    
 }
 
 
@@ -305,7 +330,7 @@ void setUpPinMode(){
     pinMode(batteryBankPin, INPUT);
     pinMode(oilSensorPin, INPUT); digitalWrite (oilSensorPin, HIGH); // enable pullup resistor
 
-    setState(MANU_ENABLE, 1);
+    setState(MODE, 0);
     
 //    Serial.println(ES_REQ_MANU, HEX);
 //    Serial.println(ES_REST_REMT_MANU_AUTO, HEX);
@@ -332,17 +357,26 @@ unsigned long logOnTime(){
 
 /*
  
- A Valid Request is a request which is accompanied with an enabled pin. So MANU_REQUEST set to high,
- is not valid unless MANU_ENABLE is also set.
+ A Valid Request is a request which is accompanied with an enabled bit. So
+ MANU_REQUEST set to high, is not a valid request unless MODE is 0 (manual).
  
- Returns true only if there is an enabled AND requested pin
- */
+ MODE   MANU_REQUEST    AUTO_REQUEST    isValidRequest
+ MANUAL        0               0                  0
+ MANUAL        0               1                  0
+ MANUAL        1               0                  1
+ MANUAL        1               1                  1
+  AUTO         0               0                  0
+  AUTO         0               1                  1
+  AUTO         1               0                  0
+  AUTO         1               1                  1
+  */
 boolean isValidRequest(){
-    if (((getState(MANU_ENABLE)&getState(MANU_REQUEST)) == 0) &&
-        ((getState(REMOTE_ENABLE)&getState(REMOTE_REQUEST)) == 0) &&
-        ((getState(AUTO_ENABLE)&getState(AUTO_REQUEST)) == 0))
-        return false;
-    else return true;
+    byte mode = getState(MODE);
+    
+    if ( (mode == 0 && getState(MANU_REQUEST) == 1) ||
+         (mode == 1 && getState(AUTO_REQUEST) == 1) )
+        return true;
+    else return false;
 }
 
 void setWaiting(byte b){
@@ -393,10 +427,30 @@ void updateStates(){
             engineStartTime = 0;
         }
     }
-    setState(VALVE,getValve());
-    setState(MAINS,getMains());
-    setState(STARTER,getStarter());
-    setState(MANU_REQUEST,getAux());
+    setState(VALVE,getValve());     // update state of valve
+    setState(MAINS,getMains());     // update state of mains
+    setState(STARTER,getStarter()); // update state of starter
+    
+    /* 
+     update state of AUX pin. 
+     
+     The following is shortcut code for the following logic:
+     
+     * if aux button is equal to whatever MANU_REQUEST is now,
+     this means that they are either both 0 or both 1. In both cases, since 
+     this is a toggle switch, the new state of MANU_REQUEST has to be OFF.
+     
+     * otherwise, it must mean that aux button is different to whatever
+     MANU_REQUEST is now, which means that either it's been pressed, and now
+     it's 0, so we have to go to 1, or it's not pressed, and now it's 1, 
+     so there is nothing to change and ON will be the new state.
+     */
+    if (getAux() == getState(MANU_REQUEST))
+        setState(MANU_REQUEST, OFF);
+    else
+        setState(MANU_REQUEST, ON);
+    
+    
     if(getBatt() < getGENON())  setState(AUTO_REQUEST, ON);
     if(getBatt() > getGENOFF()) setState(AUTO_REQUEST, OFF);
 }
