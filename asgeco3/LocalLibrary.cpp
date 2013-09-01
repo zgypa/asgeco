@@ -17,9 +17,13 @@
 // See LocalLibrary.cpp.h and ReadMe.txt for references
 //
 
-#include "Asgeco2API.h"
 #include "LocalLibrary.h"
+#include "Asgeco2API.h"
 #include "Syslog.h"
+
+// Wiznet prefix is 00:08:DC
+// generated with http://www.miniwebtool.com/mac-address-generator/
+//byte mac_addr[6] = { MAC1, MAC2, MAC3, MAC4, MAC5, MAC6 };
 
 void logg(String string) {
     Syslog.logger(1,6,ASGECO,string);

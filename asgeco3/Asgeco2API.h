@@ -16,6 +16,8 @@
 ///
 /// @see	ReadMe.txt for references
 ///
+#ifndef Asgeco2API_h
+#define Asgeco2API_h
 
 
 // Core library - IDE-based
@@ -42,9 +44,9 @@
 #define API_GENON           21
 #define API_GENOFF          22
 #define API_VBATT           25
+#define API_WARMINGUP       27
+#define API_COOLINGDOWN     28
 
-#ifndef Asgeco2API_h
-#define Asgeco2API_h
 
 void printState(EthernetClient ec);
 void writeStates(char clientline[]);

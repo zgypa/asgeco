@@ -22,20 +22,23 @@
 #include <Ethernet.h>
 #include <SPI.h>
 #include <Syslog.h>
+#include "LocalLibrary.h"
 #include "Asgeco2API.h"
 #include "GeneratorLibrary.h"
-#include "LocalLibrary.h"
 
-// Wiznet prefix is 00:08:DC
-byte mac[] = { 0x00, 0x08, 0xDC, 0xB7, 0xD6, 0xDA }; //generated with http://www.miniwebtool.com/mac-address-generator/
-IPAddress ip(10,1,16,81);
-EthernetServer server(80);
+IPAddress ip(IPADDR1,IPADDR2,IPADDR3,IPADDR4);
+EthernetServer server(HTTPPORT);
 
 // Code
 void setUpAPI(){
-//    Ethernet.begin(mac, ip); // use this for static IP
-    Ethernet.begin(mac);     // use this for DHCP
+    byte mac_addr[6] = { MAC1, MAC2, MAC3, MAC4, MAC5, MAC6 };
+
+    if(DHCP == 0)
+        Ethernet.begin(mac_addr, ip);
+    else if (DHCP == 1)
+        Ethernet.begin(mac_addr);
 }
+
 
 /*
  Please refer to 
@@ -90,13 +93,17 @@ void printState(EthernetClient ec) {
     ec.print(c);
     ec.print(getGENOFF());//22
     ec.print(c);
-    ec.print(0);//23
+    ec.print(getState(VALVE));//23
     ec.print(c);
     ec.print(0);//24
     ec.print(c);
     ec.print(getVconv());//25
     ec.print(c);
     ec.print(getOil());//26
+    ec.print(c);
+    ec.print(getWarmingUp());//27
+    ec.print(c);
+    ec.print(getCoolingDown());//28
     ec.print(c); // this last space is necessary.
 }
 
@@ -231,6 +238,16 @@ void writeStates(char clientline[]){
                 pch = strtok (NULL, FS);
                 logg("web:VBATT=" + String(atoi(pch)));
                 setBatt(atoi(pch));
+                break;
+            case API_WARMINGUP:
+                pch = strtok (NULL, FS);
+                logg("web:WARMINGUP=" + String(atoi(pch)));
+                setWarmingUp(atoi(pch));
+                break;
+            case API_COOLINGDOWN:
+                pch = strtok (NULL, FS);
+                logg("web:COOLINGDOWN=" + String(atoi(pch)));
+                setCoolingDown(atoi(pch));
                 break;
         }
         pch = strtok (NULL, FS);

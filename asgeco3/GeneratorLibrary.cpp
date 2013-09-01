@@ -41,6 +41,7 @@ boolean getState(byte b){
     return bitRead(engineState,b);
 }
 
+
 void setState(byte b, byte s){
     if (getState(b) != s) {
         bitWrite(engineState, b, s);
@@ -104,16 +105,44 @@ void setMains(byte i){
 }
 
 /*
- Gets vConv from EEPROM
+ Gets/set vConv from/to EEPROM
  */
 int getVconv(){
     int vConv;
-    EEPROM_readAnything(EEPROMINDEX+4, vConv);
+    EEPROM_readAnything(EEPROMINDEX+EEPROM_VCONV, vConv);
     return vConv;
 }
 
 void setVconv(int vConv){
-    EEPROM_writeAnything(EEPROMINDEX+4, vConv);
+    EEPROM_writeAnything(EEPROMINDEX+EEPROM_VCONV, vConv);
+}
+
+
+/*
+ Gets/sets WARMINGUP from/to EEPROM
+ */
+int getWarmingUp(){
+    int warmingUp;
+    EEPROM_readAnything(EEPROMINDEX+EEPROM_WARMINGUP, warmingUp);
+    return warmingUp;
+}
+
+void setWarmingUp(int warmingUp){
+    EEPROM_writeAnything(EEPROMINDEX+EEPROM_WARMINGUP, warmingUp);
+}
+
+
+/*
+ Gets/sets COOLINGDOWN from/to EEPROM
+ */
+int getCoolingDown(){
+    int coolingDown;
+    EEPROM_readAnything(EEPROMINDEX+EEPROM_COOLINGDOWN, coolingDown);
+    return coolingDown;
+}
+
+void setCoolingDown(int coolingDown){
+    EEPROM_writeAnything(EEPROMINDEX+EEPROM_COOLINGDOWN, coolingDown);
 }
 
 
@@ -204,21 +233,21 @@ long readVcc() {
 
 int getGENON(){
     int G;
-    EEPROM_readAnything(EEPROMINDEX+8, G);
+    EEPROM_readAnything(EEPROMINDEX+EEPROM_GENON, G);
     return G;
 }
 void setGENON(int g){
-    EEPROM_writeAnything(EEPROMINDEX+8, g);
+    EEPROM_writeAnything(EEPROMINDEX+EEPROM_GENON, g);
 }
 
 int getGENOFF(){
     int G;
-    EEPROM_readAnything(EEPROMINDEX+12, G);
+    EEPROM_readAnything(EEPROMINDEX+EEPROM_GENOFF, G);
     return G;
 }
 
 void setGENOFF(int g){
-    EEPROM_writeAnything(EEPROMINDEX+12, g);
+    EEPROM_writeAnything(EEPROMINDEX+EEPROM_GENOFF, g);
 }
 
 
@@ -416,8 +445,8 @@ void increaseAttempts(){
 
 
 void updateStates(){
-    if(getState(ENGINE) != getEngine()){
-        setState(ENGINE,getEngine());
+    if(getState(ENGINE) != getEngine()){// there has been a change
+        setState(ENGINE,getEngine());   // update state bit
         if (getState(ENGINE) == ON) {   // engine just started
             engineStartTime = millis(); // start counter
             setAttempts(0);             // if running, attempts have to be reset
@@ -822,7 +851,7 @@ void Generator(){
 
     } else if (isState17()){
         // Now we are warming up
-        if (millis() - waitStartTime > WARM_COOL_INTERVAL) {
+        if (millis() - waitStartTime > (getWarmingUp()*1000)) {
             logg("S17");
             setWaiting(OFF);
             setState(WARMINGUP, OFF);
@@ -863,7 +892,7 @@ void Generator(){
     
     } else if (isState24()){
         // Now we are cooling off
-        if (millis() - waitStartTime > WARM_COOL_INTERVAL) {
+        if (millis() - waitStartTime > (getCoolingDown()*1000)) {
             logg("S24");
             setState(COOLINGDOWN, OFF);
             setValve(CLOSE);

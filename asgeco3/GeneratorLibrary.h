@@ -16,16 +16,11 @@
 ///
 /// @see	ReadMe.txt for references
 ///
-
-
-// Core library - IDE-based
-#include "Arduino.h"
-
-
-
 #ifndef GeneratorLibrary_h
 #define GeneratorLibrary_h
 
+// Core library - IDE-based
+#include "Arduino.h"
 
 /*
  Pin Assignments
@@ -100,15 +95,20 @@
 #define ES_WAIT_COOL            0x4004
 
 #define ES_NOTIMEOUT_MASK       0xFFE7 //use this to filter out timeouts
-#define ES_NOTO_CTRL_MASK       0xF807 //use this to filter out both timeouts and CTRL
-//#define ES_NO_CTRL_MASK         0xF81F //use this to filter out CTRLs
-// TODO: update these masks according to new MANUAL/AUTO Modes
-
-// I purposely broke the code here, to remind myself to fix these states
+#define ES_NOTO_CTRL_MASK       0xFE07 //use this to filter out both timeouts and CTRL
+#define ES_NO_CTRL_MASK         0xFE1F //use this to filter out CTRLs
 
 
+// EEPROM
+#define EEPROMINDEX             0       // where to start in EEPROM
+#define EEPROM_WARMINGUP        20      // offset from EEPROMINDEX
+#define EEPROM_COOLINGDOWN      16      // offset from EEPROMINDEX
+#define EEPROM_VCONV            4       // offset from EEPROMINDEX
+#define EEPROM_GENON            8       // offset from EEPROMINDEX
+#define EEPROM_GENOFF           12      // offset from EEPROMINDEX
 
-#define EEPROMINDEX             0
+
+// Timeouts and thresholds
 #define CURRENT_THRESHOLD       200
 #define STARTER_TIMEOUT         7000    // in ms timeout for starter.
 #define SLEEP_TIMEOUT           20000   // in ms time to wait between attempts.
@@ -144,6 +144,12 @@ byte getOil();
 
 int getVconv();
 void setVconv(int vconv);
+
+int getWarmingUp();
+void setWarmingUp(int warmingUp);
+
+int getCoolingDown();
+void setCoolingDown(int coolingDown);
 
 long getEngineStartTime();
 
