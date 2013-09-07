@@ -32,7 +32,7 @@
  adjusted if adjustments are made here.
 
  */
-#define unusedPin          0 // free
+//#define unusedPin          0 // free
 #define usEchoPin          1
 #define auxPin             2 //
 #define starterPin         3 //s
@@ -40,13 +40,13 @@
 #define offSolenoidPin     6 //f
 #define fuelValveOpenPin   7 //
 #define mains1RelayPin     8 //m1
-#define mains2RelayPin     9  //unused
+//#define mains2RelayPin     9  //unused
 #define starterCurrentPin  A0
 #define usTrigPin          A1
 #define batteryBankPin     A2
 #define generatorOnPin     A3
 #define oilSensorPin       A4
-#define relayCH2Pin        A5 //unused
+//#define relayCH2Pin        A5 //unused
 
 /*
  Engine State bits

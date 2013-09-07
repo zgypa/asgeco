@@ -79,5 +79,7 @@ void setup() {
 void loop() {
     HTTPserver();
     updateStates();
-    Generator();
+    if ((getState(MODE) == AUTO) ||
+        ((getState(MODE) == MANUAL) && (getState(MANU_REQUEST) == ON)))
+        Generator();
 }

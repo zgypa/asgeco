@@ -18,6 +18,7 @@ function printHelp() {
         echo "-f, --GENOFF=<mV>         specify threshold for turning off generator in mV"
         echo "-u, --WARMINGUP=<secs>    specify warm up time, before activating load"
         echo "-d, --COOLINGDOWN=<secs>  specify cool down time, before deactivating load"
+        echo "-m, --MODE=<0|1>          0=Manual Operation, 1=Automatic (PV voltage based) operation"
         echo " "
         echo "actions:"
         echo "up                        upload data to cosm"
@@ -60,6 +61,11 @@ while test $# -gt 0; do
                 -d|--COOLINGDOWN)
                         shift
                         export NEW_COOLINGDOWN=$1
+                        shift
+                        ;;
+                -m|--MODE)
+                        shift
+                        export NEW_MODE=$1
                         shift
                         ;;
                 up|start|stop|choke)
@@ -194,20 +200,24 @@ function updateGeneratorOff(){
     fi
 }
 
+function updateMode(){
+    if [ "${NEW_MODE}" != "" ]; then
+        curl "http://${ARDUINO_IP}/?ASGECOv2&14=${NEW_MODE}"
+    fi
+}
+
 function start(){
-    curl "http://${ARDUINO_IP}/?ASGECOv2&17=1&23=1&24=1"
+    curl "http://${ARDUINO_IP}/?ASGECOv2&14=0&6=1"
 }
 
 function stop(){
-    curl "http://${ARDUINO_IP}/?ASGECOv2&17=0"
-    curl "http://${ARDUINO_IP}/?ASGECOv2&24=0"
+    curl "http://${ARDUINO_IP}/?ASGECOv2&14=0&6=0"
 }
 
 function choke(){
     curl "http://${ARDUINO_IP}/?ASGECOv2&4=1"
     curl "http://${ARDUINO_IP}/?ASGECOv2&4=0"
 }
-
 
 
 function upload() {

@@ -23,7 +23,7 @@
 #include "Arduino.h"
 
 // Set to 0 for manual IP, 1 for DHCP.
-#define DHCP 0
+#define DHCP 1
 
 // IP address of Arduino, separated in octets
 #define IPADDR1 10
