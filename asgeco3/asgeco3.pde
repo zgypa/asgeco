@@ -79,7 +79,12 @@ void setup() {
 void loop() {
     HTTPserver();
     updateStates();
-    if ((getState(MODE) == AUTO) ||
-        ((getState(MODE) == MANUAL) && (getState(MANU_REQUEST) == ON)))
+//    if ((getState(MODE) == AUTO) ||
+//        ((getState(MODE) == MANUAL) && (getState(MANU_REQUEST) == ON)))
+        // @TODO
+        // This might not be a good idea, because if i switch on, all good, but if i
+        // switch off, the state machine will shut down immediately, and not turn
+        // engine off. State machine must be disabled from state machine itself, once it's
+        // done doing it's thing.
         Generator();
 }

@@ -4349,6 +4349,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 90536ECA16C6C1740050744E /* Build configuration list for PBXNativeTarget "Index" */;
 			buildPhases = (
+				90F36A8A17FF88DD00C8E5F9 /* ShellScript */,
 				9053689016C6C1700050744E /* Sources */,
 			);
 			buildRules = (
@@ -4395,6 +4396,22 @@
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		90F36A8A17FF88DD00C8E5F9 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		9053689016C6C1700050744E /* Sources */ = {
@@ -5339,6 +5356,7 @@
 			baseConfigurationReference = 90553AD316C6D5E60029F3F1 /* Arduino Duemilanove ATmega328.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(NATIVE_ARCH_ACTUAL)";
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_WARN_EMPTY_BODY = YES;
@@ -5367,6 +5385,7 @@
 			baseConfigurationReference = 90553AD316C6D5E60029F3F1 /* Arduino Duemilanove ATmega328.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(NATIVE_ARCH_ACTUAL)";
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_WARN_EMPTY_BODY = YES;

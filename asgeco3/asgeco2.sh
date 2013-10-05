@@ -12,13 +12,15 @@ function printHelp() {
         echo " "
         echo "options:"
         echo "-h, --help                show brief help"
-        echo "-i, --ipaddress=<IP>      specify IP address of arduino"
-        echo "-v, --VCONV=factor        specify conversion factor to calibrate proper BATT mV"
-        echo "-n, --GENON=<mV>          specify threshold for turning on generator in mV"
-        echo "-f, --GENOFF=<mV>         specify threshold for turning off generator in mV"
-        echo "-u, --WARMINGUP=<secs>    specify warm up time, before activating load"
         echo "-d, --COOLINGDOWN=<secs>  specify cool down time, before deactivating load"
-        echo "-m, --MODE=<0|1>          0=Manual Operation, 1=Automatic (PV voltage based) operation"
+        echo "-f, --GENOFF=<mV>         specify threshold for turning off generator in mV"
+        echo "-i, --ipaddress=<IP>      specify IP address of arduino"
+        echo "-m, --MODE=<0|1>          0=Manual Operation, 1=Automatic Operation"
+        echo "                              (Automatic is PV voltage based)"
+        echo "-n, --GENON=<mV>          specify threshold for turning on generator in mV"
+        echo "-r, --minruntime=<mins>   specify minimum running time in minutes"
+        echo "-u, --WARMINGUP=<secs>    specify warm up time, before activating load"
+        echo "-v, --VCONV=factor        specify conversion factor to calibrate proper BATT mV"
         echo " "
         echo "actions:"
         echo "up                        upload data to cosm"
@@ -51,6 +53,11 @@ while test $# -gt 0; do
                 -f|--GENOFF)
                         shift
                         export NEW_GENOFF=$1
+                        shift
+                        ;;
+                -r|--minruntime)
+                        shift
+                        export MINIMUMRUNTIME=$1
                         shift
                         ;;
                 -u|--WARMINGUP)
@@ -118,12 +125,15 @@ function status() {
     OIL=$(echo $STRING | awk '{print $26}')
     WARMUPTIME=$(echo $STRING | awk '{print $27}')
     COOLDOWNTIME=$(echo $STRING | awk '{print $28}')
+    MINIMUMRUNTIME=$(echo $STRING | awk '{print $29}')
+    OFF_LOCK=$(echo $STRING | awk '{print $30}')
 
     echo "STARTER (1/0): ........${STARTER}"
     echo "ONSOLENOID (1/0): .....${ONSOLENOID}"
     echo "OFFSOLENOID (1/0): ....${OFFSOLENOID}"
     echo "MAINS (1/0): ..........${MAINS}"
     echo "MODE (1=AUTO/0=MANU): .${MODE}"
+    echo "OFF_LOCK:..............${OFF_LOCK}"
     echo "AUTO_REQUEST (1/0): ...${AUTO_REQUEST}"
     echo "MANU_REQUEST (1/0): ...${MANU_REQUEST}"
     echo "AUX_STATE (1/0): ......${AUX_STATE}"
@@ -133,16 +143,18 @@ function status() {
     echo "Fuel Valve (1=open): ..${VALVE}"
     echo "Engine: ...............${ENGINE}"
     echo "Total run timer (secs):${SECS_TOT}"
-    echo "Engine now on for ${SECS} seconds. Total for $[ ${SECS_TOT} / 60 ] mins."
     echo "Engine Warming Up: ....${WARMINGUP}"
     echo "Engine Cooling down: ..${COOLINGDOWN}"
     echo "System is waiting: ....${WAITING}"
     echo "Fatal error: ..........${FATAL}"
-    echo "GENON: ${GENON}  --  GENOFF: ${GENOFF}"
-    echo "Failed startup attempts:${TIMEOUTS}"
-    echo "Voltage conversion factor: ${VCONV}"
+    echo "Low Batt Trigger(mV)...${GENON}"
+    echo "Hi  Batt Trigger(mV)...${GENOFF}"
+    echo "Failed start attempts:.${TIMEOUTS}"
+    echo "Voltage conversion:....${VCONV}"
     echo "Warmup timer (secs): ..${WARMUPTIME}"
-    echo "Cooldown timer (secs): ${COOLDOWNTIME}"
+    echo "Cooldown timer (secs):.${COOLDOWNTIME}"
+    echo "Min. Run Time (mins):..${MINIMUMRUNTIME}"
+    echo "Engine now on for ${SECS} seconds. Total for $[ ${SECS_TOT} / 60 ] mins."
 
     let $SECS;
 
@@ -200,6 +212,12 @@ function updateGeneratorOff(){
     fi
 }
 
+function updateMinimumRunTime(){
+    if [ "${MINIMUMRUNTIME}" != "" ]; then
+        curl "http://${ARDUINO_IP}/?ASGECOv2&29=${MINIMUMRUNTIME}"
+    fi
+}
+
 function updateMode(){
     if [ "${NEW_MODE}" != "" ]; then
         curl "http://${ARDUINO_IP}/?ASGECOv2&14=${NEW_MODE}"
@@ -233,6 +251,8 @@ updateCoolingDown;
 updateConversionFactor;
 updateGeneratorOn;
 updateGeneratorOff;
+updateMode;
+updateMinimumRunTime;
 
 if [ "$ACTION" == "up" ]; then upload;
 elif [ "$ACTION" == "start" ]; then start;

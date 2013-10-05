@@ -46,6 +46,7 @@
 #define API_VBATT           25
 #define API_WARMINGUP       27
 #define API_COOLINGDOWN     28
+#define API_MINIMUMRUNTIME  29
 
 
 void printState(EthernetClient ec);

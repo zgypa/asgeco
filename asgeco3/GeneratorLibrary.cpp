@@ -21,6 +21,7 @@
 // Library header
 #include "GeneratorLibrary.h"
 #include "EEPROMAnything.h"
+#include "eeprom.h"
 #include "LocalLibrary.h"
 
 // Code
@@ -28,6 +29,23 @@ unsigned int engineState    = 0;
 long engineStartTime        = 0;
 long waitStartTime          = 0;
 int initialCurrent          = 0;
+
+//typedef struct {
+//    byte engine      : 1;
+//    byte starter     : 1;
+//    byte valve       : 1;
+//    byte warming     : 1;
+//    byte cooling     : 1;
+//    byte mode        : 1;
+//    byte manRequest  : 1;
+//    byte autoRequest : 1;
+//    byte switch1     : 1;
+//    byte mains       : 1;
+//    byte waiting     : 1;
+//    byte lock        : 1;
+//    byte timeouts    : 2;
+//    byte fatal       : 1;
+//} EngineState;
 
 
 /*
@@ -101,7 +119,9 @@ byte getMains(){
 }
 void setMains(byte i){
     digitalWrite(mains1RelayPin, i);
-    logg("MAINS  " + String(i));
+    logg("MAINS " + String(i));
+    if (getState(MODE) == AUTO)
+        setState(OFF_LOCK, ON); // lock shutdown if we are in automode.
 }
 
 /*
@@ -109,40 +129,40 @@ void setMains(byte i){
  */
 int getVconv(){
     int vConv;
-    EEPROM_readAnything(EEPROMINDEX+EEPROM_VCONV, vConv);
+    EEPROM_readAnything(EEPROM_VCONV, vConv);
     return vConv;
 }
 
 void setVconv(int vConv){
-    EEPROM_writeAnything(EEPROMINDEX+EEPROM_VCONV, vConv);
+    EEPROM_writeAnything(EEPROM_VCONV, vConv);
 }
 
 
 /*
- Gets/sets WARMINGUP from/to EEPROM
+ Gets/sets WARMINGUP in seconds from/to EEPROM
  */
-int getWarmingUp(){
-    int warmingUp;
-    EEPROM_readAnything(EEPROMINDEX+EEPROM_WARMINGUP, warmingUp);
+unsigned int getWarmUpSeconds(){
+    unsigned int warmingUp;
+    EEPROM_readAnything(EEPROM_WARMINGUP, warmingUp);
     return warmingUp;
 }
 
-void setWarmingUp(int warmingUp){
-    EEPROM_writeAnything(EEPROMINDEX+EEPROM_WARMINGUP, warmingUp);
+void setWarmUpSeconds(unsigned int warmingUp){
+    EEPROM_writeAnything(EEPROM_WARMINGUP, warmingUp);
 }
 
 
 /*
- Gets/sets COOLINGDOWN from/to EEPROM
+ Gets/sets COOLINGDOWN in seconds from/to EEPROM
  */
-int getCoolingDown(){
-    int coolingDown;
-    EEPROM_readAnything(EEPROMINDEX+EEPROM_COOLINGDOWN, coolingDown);
+unsigned int getCoolDownSeconds(){
+    unsigned int coolingDown;
+    EEPROM_readAnything(EEPROM_COOLINGDOWN, coolingDown);
     return coolingDown;
 }
 
-void setCoolingDown(int coolingDown){
-    EEPROM_writeAnything(EEPROMINDEX+EEPROM_COOLINGDOWN, coolingDown);
+void setCoolDownSeconds(unsigned int coolingDown){
+    EEPROM_writeAnything(EEPROM_COOLINGDOWN, coolingDown);
 }
 
 
@@ -152,12 +172,32 @@ long getEngineStartTime(){
 
 unsigned long getTotalRunSecs(){
     unsigned long total;
-    EEPROM_readAnything(EEPROMINDEX, total);
+    EEPROM_readAnything(EEPROM_TOTALRUNTIME, total);
     return total;
 }
 
 void setTotalRunSecs(long secs){
-    EEPROM_writeAnything(EEPROMINDEX, secs);
+    EEPROM_writeAnything(EEPROM_TOTALRUNTIME, secs);
+}
+
+int getMinimumRunMinutes(){
+//    byte minutes;
+//    EEPROM_readAnything(EEPROM_MINIMUMRUNTIME, minutes);
+    return (int) EEPROM.read(EEPROM_MINIMUMRUNTIME);
+}
+
+void setMinimumRunMinutes(byte minutes){
+    EEPROM.write(EEPROM_MINIMUMRUNTIME, minutes);
+//    EEPROM_writeAnything(EEPROM_TOTALRUNTIME, (byte) minutes);
+}
+
+void setMode(int mode){
+    if (mode == MANUAL) setState(OFF_LOCK, OFF);
+    setState(MODE, mode);
+}
+
+int getMode(){
+    return getState(MODE);
 }
 
 /*
@@ -171,7 +211,6 @@ void setTotalRunSecs(long secs){
  
  */
 unsigned int getBatt(){
-    // something wrong here: value seems to overflow.
     unsigned int vb = readVpin() * getVconv() / 1000;
     vb = round(vb / 100.0);
     return (vb*100);
@@ -233,21 +272,21 @@ long readVcc() {
 
 int getGENON(){
     int G;
-    EEPROM_readAnything(EEPROMINDEX+EEPROM_GENON, G);
+    EEPROM_readAnything(EEPROM_GENON, G);
     return G;
 }
 void setGENON(int g){
-    EEPROM_writeAnything(EEPROMINDEX+EEPROM_GENON, g);
+    EEPROM_writeAnything(EEPROM_GENON, g);
 }
 
 int getGENOFF(){
     int G;
-    EEPROM_readAnything(EEPROMINDEX+EEPROM_GENOFF, G);
+    EEPROM_readAnything(EEPROM_GENOFF, G);
     return G;
 }
 
 void setGENOFF(int g){
-    EEPROM_writeAnything(EEPROMINDEX+EEPROM_GENOFF, g);
+    EEPROM_writeAnything(EEPROM_GENOFF, g);
 }
 
 
@@ -295,6 +334,9 @@ byte getAux(){
     
 }
 
+unsigned long engineRunTimeMilliseconds(){
+    return millis() - engineStartTime;
+}
 
 /*
  This functions checks the input pin to see if it has been switched on. It takes
@@ -373,10 +415,10 @@ void setUpPinMode(){
  Returns amount logged this time.
  */
 unsigned long logOnTime(){
-    unsigned long logthis = (getTotalRunSecs() + (millis() - engineStartTime)/1000);
-    EEPROM_writeAnything(EEPROMINDEX, logthis);
+    unsigned long logthis = (getTotalRunSecs() + (engineRunTimeMilliseconds())/1000);
+    EEPROM_writeAnything(EEPROM_TOTALRUNTIME, logthis);
     unsigned long ee;
-    EEPROM_readAnything(EEPROMINDEX, ee);
+    EEPROM_readAnything(EEPROM_TOTALRUNTIME, ee);
     if (logthis != ee)
         logg("EEPROM CHK FAIL");
     else
@@ -479,9 +521,26 @@ void updateStates(){
     else
         setState(MANU_REQUEST, ON);
     
+    /*
+     Set the auto request trigger.
+     
+     ON trigger: fire one, whenever the batteries are too low.
+     
+     OFF trigger fire one, whenever the batteries are too high, and lock is not set.
+     */
+    if(getBatt() < getGENON())
+        setState(AUTO_REQUEST, ON);
+    if( (getBatt() > getGENOFF()) && getState(OFF_LOCK) == OFF )
+        setState(AUTO_REQUEST, OFF);
     
-    if(getBatt() < getGENON())  setState(AUTO_REQUEST, ON);
-    if(getBatt() > getGENOFF()) setState(AUTO_REQUEST, OFF);
+    /*
+     Unsets the OFF_LOCK when mains_on_time > the minimum_run_time.
+     
+     Conversion from ms to secs, then to minutes.
+     */
+    if ((engineRunTimeMilliseconds()/1000 - getWarmUpSeconds())/60 > getMinimumRunMinutes())
+        setState(OFF_LOCK, OFF);
+    
 }
 
 /*
@@ -778,6 +837,7 @@ byte isState90(){
 void Generator(){
 
     if (isState10()) {
+        logg("S10");
         // do nothing, just wait for state to change
 
     } else if (isState11()){
@@ -850,9 +910,9 @@ void Generator(){
         setState(WARMINGUP, OFF);
 
     } else if (isState17()){
+        logg("S17");
         // Now we are warming up
-        if (millis() - waitStartTime > (getWarmingUp()*1000)) {
-            logg("S17");
+        if ((millis() - waitStartTime)/1000 > getWarmUpSeconds()) {
             setWaiting(OFF);
             setState(WARMINGUP, OFF);
             setMains(ON);
@@ -865,6 +925,7 @@ void Generator(){
         setWaiting(OFF);
 
     } else if (isState20()){
+        logg("S20");
         // Generator full ON. Wait for request to drop.
 
     } else if (isState21()){
@@ -891,25 +952,28 @@ void Generator(){
         setMains(ON);
     
     } else if (isState24()){
+        logg("S24");
         // Now we are cooling off
-        if (millis() - waitStartTime > (getCoolingDown()*1000)) {
-            logg("S24");
+        if ((millis() - waitStartTime)/1000 > getCoolDownSeconds()) {
             setState(COOLINGDOWN, OFF);
             setValve(CLOSE);
             setWaiting(OFF);
         }
  
     } else if (isState240()){
+        logg("S240");
         // go back to State 20
         setState(COOLINGDOWN, OFF);
         setWaiting(OFF);
         setMains(ON);
     
     } else if (isState241()){
+        logg("S241");
         // dangling state. Fix:
         setWaiting(OFF);
         
     } else if (isState242()){
+        logg("S242");
         // dangling state. Fix:
         setWaiting(OFF);
         setState(COOLINGDOWN, OFF);
@@ -932,7 +996,8 @@ void Generator(){
 
     } else if (isState90()){
         logg("FATAL");
+        
     } else {
-        logg("ERR:0x" + String(engineState, HEX));
+        logg("UNK:0x" + String(engineState, HEX));
     }
 }

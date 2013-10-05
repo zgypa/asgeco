@@ -66,7 +66,7 @@
 #define AUTO_REQUEST    7
 
 #define AUX_STATE       8
-//#define <FREE>        9
+#define OFF_LOCK        9 // when set, generator will keep load on even if auto has requested a shutdown.
 //#define <FREE>        10
 #define STARTER         11
 
@@ -100,12 +100,14 @@
 
 
 // EEPROM
-#define EEPROMINDEX             0       // where to start in EEPROM
-#define EEPROM_WARMINGUP        20      // offset from EEPROMINDEX
-#define EEPROM_COOLINGDOWN      16      // offset from EEPROMINDEX
-#define EEPROM_VCONV            4       // offset from EEPROMINDEX
-#define EEPROM_GENON            8       // offset from EEPROMINDEX
-#define EEPROM_GENOFF           12      // offset from EEPROMINDEX
+#define EEPROMINDEX             0                   // where to start in EEPROM
+#define EEPROM_TOTALRUNTIME     EEPROMINDEX+0       // offset from EEPROMINDEX 4 bytes (unsigned long)
+#define EEPROM_VCONV            EEPROMINDEX+4       // offset from EEPROMINDEX 2 bytes (int)
+#define EEPROM_GENON            EEPROMINDEX+6       // offset from EEPROMINDEX 2 bytes (int)
+#define EEPROM_GENOFF           EEPROMINDEX+8       // offset from EEPROMINDEX 2 bytes (int)
+#define EEPROM_COOLINGDOWN      EEPROMINDEX+10      // offset from EEPROMINDEX 2 bytes (int)
+#define EEPROM_WARMINGUP        EEPROMINDEX+12      // offset from EEPROMINDEX 2 bytes (int)
+#define EEPROM_MINIMUMRUNTIME   EEPROMINDEX+14      // offset from EEPROMINDEX 1 byte  (byte)
 
 
 // Timeouts and thresholds
@@ -145,16 +147,25 @@ byte getOil();
 int getVconv();
 void setVconv(int vconv);
 
-int getWarmingUp();
-void setWarmingUp(int warmingUp);
+unsigned int getWarmUpSeconds();
+void setWarmUpSeconds(unsigned int warmingUp);
 
-int getCoolingDown();
-void setCoolingDown(int coolingDown);
+unsigned int getCoolDownSeconds();
+void setCoolDownSeconds(unsigned int coolingDown);
 
 long getEngineStartTime();
 
+unsigned long engineRunTimeMilliseconds();
+
 unsigned long getTotalRunSecs();
 void setTotalRunSecs(long secs);
+
+/**
+ * The minimum amount of time the generator should run when an AUTO request event has been triggered.
+ * Value between 0-255
+ */
+int getMinimumRunMinutes();
+void setMinimumRunMinutes(byte minutes);
 
 unsigned int getBatt();
 void setBatt(int vbatt);
@@ -171,6 +182,9 @@ byte getInputPin(byte pin);
 
 void openFuelValve();
 void closeFuelValve();
+
+void setMode(int mode);
+int getMode();
 
 float readVpin();
 

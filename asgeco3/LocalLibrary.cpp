@@ -25,6 +25,11 @@
 // generated with http://www.miniwebtool.com/mac-address-generator/
 //byte mac_addr[6] = { MAC1, MAC2, MAC3, MAC4, MAC5, MAC6 };
 
+String lastLog;
+
 void logg(String string) {
-    Syslog.logger(1,6,ASGECO,string);
+    if (string != lastLog) {
+        Syslog.logger(1,6,ASGECO,string);
+        lastLog = string;
+    }
 }

@@ -72,7 +72,7 @@ void printState(EthernetClient ec) {
     ec.print(c);
     ec.print(getState(WAITING));//13
     ec.print(c);
-    ec.print(getState(MODE));//14
+    ec.print(getMode());//14
     ec.print(c);
     ec.print(getState(FATAL));//15
     ec.print(c);
@@ -101,9 +101,13 @@ void printState(EthernetClient ec) {
     ec.print(c);
     ec.print(getOil());//26
     ec.print(c);
-    ec.print(getWarmingUp());//27
+    ec.print(getWarmUpSeconds());//27
     ec.print(c);
-    ec.print(getCoolingDown());//28
+    ec.print(getCoolDownSeconds());//28
+    ec.print(c);
+    ec.print(getMinimumRunMinutes());//29
+    ec.print(c);
+    ec.print(getState(OFF_LOCK));//30
     ec.print(c); // this last space is necessary.
 }
 
@@ -202,7 +206,7 @@ void writeStates(char clientline[]){
             case API_MODE:
                 pch = strtok (NULL, FS);
                 logg("web:MODE=" + String(atoi(pch)));
-                setState(MODE, atoi(pch));
+                setMode(atoi(pch));
                 break;
             case API_FATAL:
                 pch = strtok (NULL, FS);
@@ -223,31 +227,43 @@ void writeStates(char clientline[]){
                 pch = strtok (NULL, FS);
                 logg("web:SECS_TOT=" + String(atoi(pch)));
                 setTotalRunSecs(long(atoi(pch)));
+                logg("web:SECS_TOT=" + String(getTotalRunSecs()) + " set");
                 break;
             case API_GENON:
                 pch = strtok (NULL, FS);
                 logg("web:GENON=" + String(atoi(pch)));
                 setGENON(atoi(pch));
+                logg("web:GENOFF=" + String(getGENON()) + " set");
                 break;
             case API_GENOFF:
                 pch = strtok (NULL, FS);
                 logg("web:GENOFF=" + String(atoi(pch)));
                 setGENOFF(atoi(pch));
+                logg("web:GENOFF=" + String(getGENOFF()) + " set");
                 break;
             case API_VBATT:
                 pch = strtok (NULL, FS);
                 logg("web:VBATT=" + String(atoi(pch)));
                 setBatt(atoi(pch));
+                logg("web:VBATT=" + String(getVconv()) + " set");
                 break;
             case API_WARMINGUP:
                 pch = strtok (NULL, FS);
                 logg("web:WARMINGUP=" + String(atoi(pch)));
-                setWarmingUp(atoi(pch));
+                setWarmUpSeconds(atoi(pch));
+                logg("web:WARMINGUP=" + String(getWarmUpSeconds()) + " set");
                 break;
             case API_COOLINGDOWN:
                 pch = strtok (NULL, FS);
                 logg("web:COOLINGDOWN=" + String(atoi(pch)));
-                setCoolingDown(atoi(pch));
+                setCoolDownSeconds(atoi(pch));
+                logg("web:COOLINGDOWN=" + String(getCoolDownSeconds()) + " set");
+                break;
+            case API_MINIMUMRUNTIME:
+                pch = strtok (NULL, FS);
+                logg("web:MINRUNTIME=" + String(atoi(pch)));
+                setMinimumRunMinutes(atoi(pch));
+                logg("web:MINRUNTIME=" + String(getMinimumRunMinutes()) + " set");
                 break;
         }
         pch = strtok (NULL, FS);
