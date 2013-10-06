@@ -21,15 +21,37 @@
 #include "Asgeco2API.h"
 #include "Syslog.h"
 
+
+
 // Wiznet prefix is 00:08:DC
 // generated with http://www.miniwebtool.com/mac-address-generator/
 //byte mac_addr[6] = { MAC1, MAC2, MAC3, MAC4, MAC5, MAC6 };
 
 String lastLog;
+//char logstring[18];
+//char[] lastLog;
+
+// this function will return the number of bytes currently free in RAM
+// written by David A. Mellis
+// based on code by Rob Faludi http://www.faludi.com
+//int availableMemory() {
+//    int size = 2048; // Use 2048 with ATmega328
+//    byte *buf;
+//    
+//    while ((buf = (byte *) malloc(--size)) == NULL)
+//        ;
+//    
+//    free(buf);
+//    
+//    return size;
+//}
+//
 
 void logg(String string) {
     if (string != lastLog) {
-        Syslog.logger(1,6,ASGECO,string);
+        if (globals.ethernet == UP)
+            Syslog.logger(1,6,ASGECO, string);
+        Serial.println(string);
         lastLog = string;
     }
 }

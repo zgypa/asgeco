@@ -32,16 +32,17 @@ EthernetServer server(HTTPPORT);
 // Code
 void setUpAPI(){
     byte mac_addr[6] = { MAC1, MAC2, MAC3, MAC4, MAC5, MAC6 };
-
+    
     if(DHCP == 0)
         Ethernet.begin(mac_addr, ip);
     else if (DHCP == 1)
         Ethernet.begin(mac_addr);
+    globals.ethernetSetup = true;
 }
 
 
 /*
- Please refer to 
+ Please refer to
  https://wiki.afm.co/display/CIAP/Asgeco+2.1+firmware+API+%28current%29
  */
 void printState(EthernetClient ec) {
@@ -169,7 +170,7 @@ void HTTPserver() {
         delay(1);
         // close the connection:
         client.stop();
-        //logg("client disonnected");
+//        logg("WEB:STOP");
     }
     
 }
@@ -185,37 +186,38 @@ void writeStates(char clientline[]){
         switch (atoi(pch)){
             case API_STARTER:
                 pch = strtok (NULL, FS);
-                logg("web:STARTER=" + String(atoi(pch)));
                 setStarter(atoi(pch));
+//                logg("web:STARTER=" + String(atoi(pch)));
                 break;
             case API_ONSOLENOID:
                 pch = strtok (NULL, FS);
-                logg("web:ONSOLENOID=" + String(atoi(pch)));
+//                logg("web:ONSOLENOID=" + String(atoi(pch)));
                 digitalWrite(onSolenoidPin,atoi(pch));
                 break;
             case API_OFFSOLENOID:
                 pch = strtok (NULL, FS);
-                logg("web:OFFSOLENOID=" + String(atoi(pch)));
+//                logg("web:OFFSOLENOID=" + String(atoi(pch)));
                 digitalWrite(offSolenoidPin,atoi(pch));
-                break;
+                logg("WEB:OK");
+              break;
             case API_MAINS:
                 pch = strtok (NULL, FS);
-                logg("web:MAINS=" + String(atoi(pch)));
+//                logg("web:MAINS=" + String(atoi(pch)));
                 setMains(atoi(pch));
                 break;
             case API_MODE:
                 pch = strtok (NULL, FS);
-                logg("web:MODE=" + String(atoi(pch)));
+//                logg("web:MODE=" + String(atoi(pch)));
                 setMode(atoi(pch));
                 break;
             case API_FATAL:
                 pch = strtok (NULL, FS);
-                logg("web:FATAL=" + String(atoi(pch)));
+//                logg("web:FATAL=" + String(atoi(pch)));
                 setState(FATAL, atoi(pch));
                 break;
             case API_MAN_REQUEST:
                 pch = strtok (NULL, FS);
-                logg("web:MANU_REQ=" + String(atoi(pch)));
+//                logg("web:MANU_REQ=" + String(atoi(pch)));
                 setState(MANU_REQUEST, atoi(pch));
                 break;
             case API_TIMEOUTS:
@@ -225,45 +227,45 @@ void writeStates(char clientline[]){
                 break;
             case API_SECS_TOT:
                 pch = strtok (NULL, FS);
-                logg("web:SECS_TOT=" + String(atoi(pch)));
+//                logg("web:SECS_TOT=" + String(atoi(pch)));
                 setTotalRunSecs(long(atoi(pch)));
-                logg("web:SECS_TOT=" + String(getTotalRunSecs()) + " set");
+//                logg("web:SECS_TOT=" + String(getTotalRunSecs()) + " set");
                 break;
             case API_GENON:
                 pch = strtok (NULL, FS);
-                logg("web:GENON=" + String(atoi(pch)));
+//                logg("web:GENON=" + String(atoi(pch)));
                 setGENON(atoi(pch));
-                logg("web:GENOFF=" + String(getGENON()) + " set");
+//                logg("web:GENOFF=" + String(getGENON()) + " set");
                 break;
             case API_GENOFF:
                 pch = strtok (NULL, FS);
-                logg("web:GENOFF=" + String(atoi(pch)));
+//                logg("web:GENOFF=" + String(atoi(pch)));
                 setGENOFF(atoi(pch));
-                logg("web:GENOFF=" + String(getGENOFF()) + " set");
+//                logg("web:GENOFF=" + String(getGENOFF()) + " set");
                 break;
             case API_VBATT:
                 pch = strtok (NULL, FS);
-                logg("web:VBATT=" + String(atoi(pch)));
+//                logg("web:VBATT=" + String(atoi(pch)));
                 setBatt(atoi(pch));
-                logg("web:VBATT=" + String(getVconv()) + " set");
+//                logg("web:VBATT=" + String(getVconv()) + " set");
                 break;
             case API_WARMINGUP:
                 pch = strtok (NULL, FS);
-                logg("web:WARMINGUP=" + String(atoi(pch)));
+//                logg("web:WARMINGUP=" + String(atoi(pch)));
                 setWarmUpSeconds(atoi(pch));
-                logg("web:WARMINGUP=" + String(getWarmUpSeconds()) + " set");
+//                logg("web:WARMINGUP=" + String(getWarmUpSeconds()) + " set");
                 break;
             case API_COOLINGDOWN:
                 pch = strtok (NULL, FS);
-                logg("web:COOLINGDOWN=" + String(atoi(pch)));
+//                logg("web:COOLINGDOWN=" + String(atoi(pch)));
                 setCoolDownSeconds(atoi(pch));
-                logg("web:COOLINGDOWN=" + String(getCoolDownSeconds()) + " set");
+//                logg("web:COOLINGDOWN=" + String(getCoolDownSeconds()) + " set");
                 break;
             case API_MINIMUMRUNTIME:
                 pch = strtok (NULL, FS);
-                logg("web:MINRUNTIME=" + String(atoi(pch)));
+//                logg("web:MINRUNTIME=" + String(atoi(pch)));
                 setMinimumRunMinutes(atoi(pch));
-                logg("web:MINRUNTIME=" + String(getMinimumRunMinutes()) + " set");
+//                logg("web:MINRUNTIME=" + String(getMinimumRunMinutes()) + " set");
                 break;
         }
         pch = strtok (NULL, FS);

@@ -5357,6 +5357,7 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ARCHS = "$(NATIVE_ARCH_ACTUAL)";
+				BOARD_TAG = uno;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_WARN_EMPTY_BODY = YES;
@@ -5386,6 +5387,7 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ARCHS = "$(NATIVE_ARCH_ACTUAL)";
+				BOARD_TAG = uno;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_WARN_EMPTY_BODY = YES;
@@ -5405,6 +5407,7 @@
 		90536EAD16C6C1740050744E /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				BOARD_TAG = uno;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
@@ -5412,6 +5415,7 @@
 		90536EAE16C6C1740050744E /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				BOARD_TAG = uno;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;

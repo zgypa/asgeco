@@ -40,7 +40,7 @@
 #define offSolenoidPin     6 //f
 #define fuelValveOpenPin   7 //
 #define mains1RelayPin     8 //m1
-//#define mains2RelayPin     9  //unused
+#define ethernetLinkPin    9  //unused
 #define starterCurrentPin  A0
 #define usTrigPin          A1
 #define batteryBankPin     A2
@@ -116,13 +116,6 @@
 #define SLEEP_TIMEOUT           20000   // in ms time to wait between attempts.
 #define WARM_COOL_INTERVAL      60000   // in ms interval to wait for warm up/cool down
 
-
-#define ON      1
-#define OPEN    1
-#define CLOSE   0
-#define OFF     0
-#define MANUAL  0
-#define AUTO    1
 
 boolean getState(byte b);
 void setState(byte b, byte s);

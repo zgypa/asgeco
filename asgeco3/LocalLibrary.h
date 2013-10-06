@@ -23,13 +23,13 @@
 #include "Arduino.h"
 
 // Set to 0 for manual IP, 1 for DHCP.
-#define DHCP 0
+#define DHCP 1
 
 // IP address of Arduino, separated in octets
 #define IPADDR1 10
 #define IPADDR2 1
 #define IPADDR3 16
-#define IPADDR4 181
+#define IPADDR4 81
 
 // IP address of syslog server, seprated in octets
 #define SYSLOGIP1 10
@@ -50,6 +50,16 @@
 //extern byte mac_addr[6];
 
 
+#define ON      1
+#define OPEN    1
+#define AUTO    1
+#define DOWN    1
+#define OFF     0
+#define CLOSE   0
+#define MANUAL  0
+#define UP      0
+
+
 /// @brief	Log a string
 /// @details	The passed string is logged
 /// @n		Total cycle duration = ms
@@ -58,6 +68,16 @@
 /// @param	ms cycle duration in ms
 ///
 extern void logg(String string);
+
+
+typedef struct {
+    byte lastEthernetLinkState      : 1;
+    byte ethernet                   : 1;
+    byte ethernetSetup              : 1;
+} Globals;
+
+extern Globals globals;
+extern char logstring[18];
 
 
 #endif

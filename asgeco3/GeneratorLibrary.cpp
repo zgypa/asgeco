@@ -30,6 +30,8 @@ long engineStartTime        = 0;
 long waitStartTime          = 0;
 int initialCurrent          = 0;
 
+
+
 //typedef struct {
 //    byte engine      : 1;
 //    byte starter     : 1;
@@ -64,7 +66,7 @@ void setState(byte b, byte s){
     if (getState(b) != s) {
         bitWrite(engineState, b, s);
 //        logg(String("Set: ") + String(b));
-        logg(String("New: 0x") + String(engineState, HEX));
+        logg(String(engineState, HEX));
     }
 }
 
@@ -74,7 +76,7 @@ byte getStarter(){
 
 void setStarter(byte i){
     digitalWrite(starterPin, i);
-    logg("Starter " + String(i));
+//    logg("Starter " + String(i));
 }
 
 byte getEngine(){
@@ -119,7 +121,7 @@ byte getMains(){
 }
 void setMains(byte i){
     digitalWrite(mains1RelayPin, i);
-    logg("MAINS " + String(i));
+//    logg("MAINS " + String(i));
     if (getState(MODE) == AUTO)
         setState(OFF_LOCK, ON); // lock shutdown if we are in automode.
 }
@@ -295,18 +297,18 @@ void setGENOFF(int g){
  This should be done making use of states.
  */
 void openFuelValve(){
-    logg("Opening valve");
+//    logg("Opening valve");
     digitalWrite(onSolenoidPin, HIGH);
     delay(200);
     digitalWrite(onSolenoidPin, LOW);
 }
 
 void closeFuelValve(){
-    logg("Closing valve");
+//    logg("Closing valve");
     digitalWrite(offSolenoidPin, HIGH);
     delay(300);
     digitalWrite(offSolenoidPin, LOW);
-    logg("Valve 0");
+//    logg("Valve 0");
 }
 
 /*
@@ -388,13 +390,13 @@ void setUpPinMode(){
      */
     pinMode(4, OUTPUT); digitalWrite(4, HIGH);
     
-    pinMode(auxPin, INPUT); digitalWrite (auxPin, HIGH); // enable pullup resistore
+    pinMode(ethernetLinkPin, INPUT); digitalWrite (ethernetLinkPin, HIGH); // enable pullup
+    pinMode(auxPin, INPUT); digitalWrite (auxPin, HIGH);                   // enable pullup
     pinMode(starterPin, OUTPUT);
     pinMode(onSolenoidPin, OUTPUT);
     pinMode(offSolenoidPin, OUTPUT);
     pinMode(mains1RelayPin, OUTPUT);
-    //  pinMode(mains2RelayPin, OUTPUT);
-    pinMode(fuelValveOpenPin, INPUT); digitalWrite (fuelValveOpenPin, HIGH); // enable pullup resistor
+    pinMode(fuelValveOpenPin, INPUT); digitalWrite (fuelValveOpenPin, HIGH); // enable pullup 
     pinMode(starterCurrentPin, INPUT);
     pinMode(oilSensorPin, INPUT); digitalWrite (oilSensorPin, HIGH); // enable pullup resistor
     pinMode(generatorOnPin, INPUT); digitalWrite (generatorOnPin, HIGH); // enable pullup resistor
@@ -420,9 +422,13 @@ unsigned long logOnTime(){
     unsigned long ee;
     EEPROM_readAnything(EEPROM_TOTALRUNTIME, ee);
     if (logthis != ee)
+        // ERROR
         logg("EEPROM CHK FAIL");
-    else
-        logg(String("Logged ") + String(logthis));
+    else {
+        //        logg(String("Logged ") + String(logthis));
+        snprintf(logstring, sizeof(logstring), "%s %i", "Logged", logthis);
+        logg(logstring);
+    }
     return logthis;
 }
 
@@ -479,6 +485,7 @@ void increaseAttempts(){
     a++;  // now the value is in a, and we can increment it.
     setAttempts(a);
     if (a == 3) {
+        // ERROR
         logg("FATAL after 4 attempts");
         setState(FATAL, true);
     }
@@ -857,12 +864,14 @@ void Generator(){
         setValve(CLOSE);
 
     } else if (isState13()){
-        logg("S13:Starter running.");
-        logg(String(initialCurrent));
-        logg(String(readCurrent()));
-        logg(String(initialCurrent - readCurrent()));
+        logg("S13");
+        snprintf(logstring,sizeof(logstring),"%i-%i=%i",initialCurrent,readCurrent(),initialCurrent-readCurrent());
+//        logg(String(initialCurrent));
+//        logg(String(readCurrent()));
+//        logg(String(initialCurrent - readCurrent()));
+        logg(logstring);
         if (initialCurrent - readCurrent() > CURRENT_THRESHOLD) {
-            logg("Dropped");
+            logg("Drop");
             setStarter(OFF);
             setAttempts(0);
         } else if (millis() - waitStartTime > STARTER_TIMEOUT ) {
@@ -871,7 +880,8 @@ void Generator(){
             setWaiting(OFF);
             setWaiting(ON); // reset waiting timer for S52
             increaseAttempts();
-            logg(String("TO: ") + String(getAttempts()));
+            snprintf(logstring, sizeof(logstring), "%s %b","TO:",getAttempts());
+            logg(logstring);
             if (getAttempts() >= 3) setState(FATAL, ON);
         }
     } else if (isState130()){
@@ -998,6 +1008,7 @@ void Generator(){
         logg("FATAL");
         
     } else {
-        logg("UNK:0x" + String(engineState, HEX));
+        snprintf(logstring, sizeof(logstring), "%s%X","UNK:0x",engineState);
+        logg(logstring);
     }
 }

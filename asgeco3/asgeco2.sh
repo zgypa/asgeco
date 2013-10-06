@@ -181,47 +181,38 @@ function status() {
     "
 }
 
+URL="http://${ARDUINO_IP}/?ASGECOv2"
 
-function updateWarmingUpTime(){
-    if [ "${NEW_WARMINGUP}" != "" ]; then
-        curl "http://${ARDUINO_IP}/?ASGECOv2&27=${NEW_WARMINGUP}"
-    fi
-}
+if [ "${NEW_WARMINGUP}" != "" ]; then
+    URL="${URL}&27=${NEW_WARMINGUP}"
+fi
 
-function updateCoolingDown(){
-    if [ "${NEW_COOLINGDOWN}" != "" ]; then
-        curl "http://${ARDUINO_IP}/?ASGECOv2&28=${NEW_COOLINGDOWN}"
-    fi
-}
+if [ "${NEW_COOLINGDOWN}" != "" ]; then
+    URL="${URL}&28=${NEW_COOLINGDOWN}"
+fi
 
-function updateConversionFactor(){
-    if [ "${NEW_VCONV}" != "" ]; then
-        curl "http://${ARDUINO_IP}/?ASGECOv2&25=${NEW_VCONV}"
-    fi
-}
+if [ "${NEW_VCONV}" != "" ]; then
+    URL="${URL}&25=${NEW_VCONV}"
+fi
 
-function updateGeneratorOn(){
-    if [ "${NEW_GENON}" != "" ]; then
-        curl "http://${ARDUINO_IP}/?ASGECOv2&21=${NEW_GENON}"
-    fi
-}
+if [ "${NEW_GENON}" != "" ]; then
+    URL="${URL}&21=${NEW_GENON}"
+fi
 
-function updateGeneratorOff(){
-    if [ "${NEW_GENOFF}" != "" ]; then
-        curl "http://${ARDUINO_IP}/?ASGECOv2&22=${NEW_GENOFF}"
-    fi
-}
+if [ "${NEW_GENOFF}" != "" ]; then
+    URL="${URL}&22=${NEW_GENOFF}"
+fi
 
-function updateMinimumRunTime(){
-    if [ "${MINIMUMRUNTIME}" != "" ]; then
-        curl "http://${ARDUINO_IP}/?ASGECOv2&29=${MINIMUMRUNTIME}"
-    fi
-}
+if [ "${MINIMUMRUNTIME}" != "" ]; then
+    URL="${URL}&29=${MINIMUMRUNTIME}"
+fi
 
-function updateMode(){
-    if [ "${NEW_MODE}" != "" ]; then
-        curl "http://${ARDUINO_IP}/?ASGECOv2&14=${NEW_MODE}"
-    fi
+if [ "${NEW_MODE}" != "" ]; then
+    URL="${URL}&14=${NEW_MODE}"
+fi
+
+function updateSettings(){
+    curl "${URL}"
 }
 
 function start(){
@@ -246,13 +237,7 @@ function upload() {
       http://api.cosm.com/v2/feeds/$FEED_ID
 }
 
-updateWarmingUpTime;
-updateCoolingDown;
-updateConversionFactor;
-updateGeneratorOn;
-updateGeneratorOff;
-updateMode;
-updateMinimumRunTime;
+updateSettings;
 
 if [ "$ACTION" == "up" ]; then upload;
 elif [ "$ACTION" == "start" ]; then start;

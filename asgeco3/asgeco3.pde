@@ -44,10 +44,22 @@
 #include "Asgeco2API.h"
 #include "Syslog.h"
 #include "GeneratorLibrary.h"
+#include <avr/wdt.h>
 
 byte loghost[] = { SYSLOGIP1,SYSLOGIP2,SYSLOGIP3,SYSLOGIP4 };
+Globals globals = { DOWN, DOWN, false };
+char logstring[18];
 
-
+void setUpEthernet(){
+    logg("LKUP");
+    if (globals.ethernetSetup == false){
+        setUpAPI();
+        Syslog.setLoghost(loghost);
+    }
+    globals.ethernet = UP;
+    globals.lastEthernetLinkState = UP;
+    logg("NETUP");
+}
 
 // Define variables and constants
 ///
@@ -62,10 +74,12 @@ byte loghost[] = { SYSLOGIP1,SYSLOGIP2,SYSLOGIP3,SYSLOGIP4 };
 ///
 // Add setup code 
 void setup() {
-//    Serial.begin(9600);
-//    Serial.print("ON:");
-    setUpAPI();
-    Syslog.setLoghost(loghost);
+    delay(1000);
+    wdt_enable (WDTO_8S);  // reset after 8 second, if no "pat the dog" received
+    Serial.begin(9600);
+    if (digitalRead(ethernetLinkPin) == UP){
+        setUpEthernet();
+    }
     setUpPinMode();
     logg(ASGECO);
 //    setState(MANU_ENABLE, ON);
@@ -77,14 +91,27 @@ void setup() {
 ///
 // Add loop code 
 void loop() {
-    HTTPserver();
+    wdt_reset();
+//    snprintf(logstring, sizeof(logstring), "%i %i %i",globals.ethernet,globals.lastEthernetLinkState,digitalRead(ethernetLinkPin));
+//    logg(logstring);
+    if ((digitalRead(ethernetLinkPin) == UP) && (globals.lastEthernetLinkState == DOWN)){
+        setUpEthernet();
+    }
+    
+    if (digitalRead(ethernetLinkPin) == DOWN){
+        globals.ethernet = DOWN;
+//        snprintf(logstring, sizeof(logstring), "%s %i","LKDN:",globals.ethernet);
+//        logg(logstring);
+        globals.lastEthernetLinkState = DOWN;
+    }
+    
+    if (globals.ethernet == UP) {
+        HTTPserver();
+    }
+
     updateStates();
-//    if ((getState(MODE) == AUTO) ||
-//        ((getState(MODE) == MANUAL) && (getState(MANU_REQUEST) == ON)))
-        // @TODO
-        // This might not be a good idea, because if i switch on, all good, but if i
-        // switch off, the state machine will shut down immediately, and not turn
-        // engine off. State machine must be disabled from state machine itself, once it's
-        // done doing it's thing.
-        Generator();
+    Generator();
+    
+    
 }
+
