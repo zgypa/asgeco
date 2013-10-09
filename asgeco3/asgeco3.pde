@@ -34,7 +34,7 @@
 /// @see	ReadMe.txt for references
 /// @n
 ///
-#define ARDUINO 103
+#define ARDUINO 105
 
 // Core library for code-sense
 #include "Arduino.h"
@@ -61,6 +61,7 @@ void setUpEthernet(){
     logg("NETUP");
 }
 
+
 // Define variables and constants
 ///
 /// @brief	Name of the LED
@@ -81,6 +82,7 @@ void setup() {
         setUpEthernet();
     }
     setUpPinMode();
+    setErrorCode(ERROR_NONE);
     logg(ASGECO);
 //    setState(MANU_ENABLE, ON);
 }

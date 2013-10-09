@@ -27,6 +27,7 @@ function printHelp() {
         echo "start                     start generator"
         echo "stop                      stop generator"
         echo "choke                     close fuel valve"
+        echo "restart                   reboot asgeco"
 }
 
 while test $# -gt 0; do
@@ -75,7 +76,7 @@ while test $# -gt 0; do
                         export NEW_MODE=$1
                         shift
                         ;;
-                up|start|stop|choke)
+                up|start|stop|choke|restart)
                         export ACTION=$1
                         shift
                         ;;
@@ -127,6 +128,7 @@ function status() {
     COOLDOWNTIME=$(echo $STRING | awk '{print $28}')
     MINIMUMRUNTIME=$(echo $STRING | awk '{print $29}')
     OFF_LOCK=$(echo $STRING | awk '{print $30}')
+    ERROR=$(echo $STRING | awk '{print $32}')
 
     echo "STARTER (1/0): ........${STARTER}"
     echo "ONSOLENOID (1/0): .....${ONSOLENOID}"
@@ -146,7 +148,6 @@ function status() {
     echo "Engine Warming Up: ....${WARMINGUP}"
     echo "Engine Cooling down: ..${COOLINGDOWN}"
     echo "System is waiting: ....${WAITING}"
-    echo "Fatal error: ..........${FATAL}"
     echo "Low Batt Trigger(mV)...${GENON}"
     echo "Hi  Batt Trigger(mV)...${GENOFF}"
     echo "Failed start attempts:.${TIMEOUTS}"
@@ -154,6 +155,8 @@ function status() {
     echo "Warmup timer (secs): ..${WARMUPTIME}"
     echo "Cooldown timer (secs):.${COOLDOWNTIME}"
     echo "Min. Run Time (mins):..${MINIMUMRUNTIME}"
+    echo "Fatal error: ..........${FATAL}"
+    echo "Error code:............${ERROR}"
     echo "Engine now on for ${SECS} seconds. Total for $[ ${SECS_TOT} / 60 ] mins."
 
     let $SECS;
@@ -166,6 +169,7 @@ function status() {
 
     echo "Engine running: ${RUNNING}"
     echo "OIL alarm: ${OIL}"
+
 
     DATA_BINARY="
     {\n
@@ -228,6 +232,9 @@ function choke(){
     curl "http://${ARDUINO_IP}/?ASGECOv2&4=0"
 }
 
+function systemReboot(){
+    curl "http://${ARDUINO_IP}/?ASGECOv2&31=1"
+}
 
 function upload() {
  curl --request PUT \
@@ -243,5 +250,6 @@ if [ "$ACTION" == "up" ]; then upload;
 elif [ "$ACTION" == "start" ]; then start;
 elif [ "$ACTION" == "stop" ]; then stop;
 elif [ "$ACTION" == "choke" ]; then choke;
+elif [ "$ACTION" == "restart" ]; then systemReboot;
 else status;
 fi;

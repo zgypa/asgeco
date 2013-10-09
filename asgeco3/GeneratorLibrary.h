@@ -99,8 +99,8 @@
 #define ES_NO_CTRL_MASK         0xFE1F //use this to filter out CTRLs
 
 
-// EEPROM
-#define EEPROMINDEX             0                   // where to start in EEPROM
+// EEPROM. First 21 bytes (0-20) used for TFTP Ethernet settings.
+#define EEPROMINDEX             21                  // where to start in EEPROM
 #define EEPROM_TOTALRUNTIME     EEPROMINDEX+0       // offset from EEPROMINDEX 4 bytes (unsigned long)
 #define EEPROM_VCONV            EEPROMINDEX+4       // offset from EEPROMINDEX 2 bytes (int)
 #define EEPROM_GENON            EEPROMINDEX+6       // offset from EEPROMINDEX 2 bytes (int)
@@ -115,7 +115,9 @@
 #define STARTER_TIMEOUT         7000    // in ms timeout for starter.
 #define SLEEP_TIMEOUT           20000   // in ms time to wait between attempts.
 #define WARM_COOL_INTERVAL      60000   // in ms interval to wait for warm up/cool down
-
+#define VALVE_OPEN_DELAY        200     // how many ms to give current to solenoid
+#define VALVE_CLOSE_DELAY       200     // how many ms to give current to solenoid
+#define AUX_BUFFER_TIME         200     // in ms how long to press aux to count it as valid
 
 boolean getState(byte b);
 void setState(byte b, byte s);
@@ -185,5 +187,7 @@ void setUpPinMode();
 
 void Generator();
 void updateStates();
+
+int getCurrentRunningSeconds();
 
 #endif

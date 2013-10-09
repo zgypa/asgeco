@@ -21,6 +21,7 @@
 #include "Asgeco2API.h"
 #include "Syslog.h"
 
+byte errorCode;
 
 
 // Wiznet prefix is 00:08:DC
@@ -48,10 +49,20 @@ String lastLog;
 //
 
 void logg(String string) {
-    if (string != lastLog) {
-        if (globals.ethernet == UP)
-            Syslog.logger(1,6,ASGECO, string);
-        Serial.println(string);
-        lastLog = string;
+    if (LOG == 1){
+        if (string != lastLog) {
+            if (globals.ethernet == UP)
+                Syslog.logger(1,6,ASGECO, string);
+            Serial.println(string);
+            lastLog = string;
+        }
     }
+}
+
+byte getErrorCode(){
+    return errorCode;
+}
+
+void setErrorCode(byte e){
+    errorCode = e;
 }

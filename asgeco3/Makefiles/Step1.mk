@@ -171,6 +171,8 @@ ifneq ($(MAKECMDGOALS),boards)
             include $(MAKEFILE_PATH)/MapleIDE.mk
         else ifneq ($(shell grep ^$(BOARD_TAG).name $(TEENSY_PATH)/hardware/teensy/boards.txt),)
             include $(MAKEFILE_PATH)/Teensy.mk
+        else ifneq ($(shell grep ^$(BOARD_TAG).name ./hardware/arduino-tftpboot/boards.txt),)
+            include $(MAKEFILE_PATH)/Arduino-TFTP.mk
         else
             $(error $(BOARD_TAG) is unknown)
         endif

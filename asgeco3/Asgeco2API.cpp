@@ -22,19 +22,46 @@
 #include <Ethernet.h>
 #include <SPI.h>
 #include <Syslog.h>
+#include <EEPROM.h>
+#include <avr/wdt.h>
 #include "LocalLibrary.h"
 #include "Asgeco2API.h"
 #include "GeneratorLibrary.h"
 
-IPAddress ip(IPADDR1,IPADDR2,IPADDR3,IPADDR4);
+
 EthernetServer server(HTTPPORT);
+byte mac_addr[6]={ MAC1, MAC2, MAC3, MAC4, MAC5, MAC6 };
+byte ip_addr[4] ={ IPADDR1,IPADDR2,IPADDR3,IPADDR4 };
+byte ip_mask[4] ={ IPMASK1,IPMASK2,IPMASK3,IPMASK4 };
+byte ip_gw[4]   ={ GW1, GW2, GW3, GW4 };
+byte ip_dns[4]  ={ DNS1, DNS2, DNS3, DNS4 };
 
 // Code
-void setUpAPI(){
-    byte mac_addr[6] = { MAC1, MAC2, MAC3, MAC4, MAC5, MAC6 };
+void configureNetwork() {
+    // Reads IP address from EEPROM as stored by `WriteNetworkSettings` sketch.
     
+    if ((EEPROM.read(EEPROM_SIG_1_OFFSET) == EEPROM_SIG_1_VALUE)
+        && (EEPROM.read(EEPROM_SIG_2_OFFSET) == EEPROM_SIG_2_VALUE)) {
+        for (int i=0; i<4; i++) {
+            ip_addr[i] = EEPROM.read(EEPROM_IP_OFFSET+i);
+            ip_mask[i]    = EEPROM.read(EEPROM_MASK_OFFSET+i);
+            ip_gw[i]   = EEPROM.read(EEPROM_GATEWAY_OFFSET+i);
+        }
+        for (int i=0; i<6; i++) {
+            mac_addr[i] = EEPROM.read(EEPROM_MAC_OFFSET+i);
+        }
+    }
+}
+
+void setUpAPI(){
+    configureNetwork();
     if(DHCP == 0)
-        Ethernet.begin(mac_addr, ip);
+        Ethernet.begin(
+                       mac_addr,
+                       ip_addr,
+                       ip_dns,
+                       ip_gw,
+                       ip_mask);
     else if (DHCP == 1)
         Ethernet.begin(mac_addr);
     globals.ethernetSetup = true;
@@ -46,70 +73,43 @@ void setUpAPI(){
  https://wiki.afm.co/display/CIAP/Asgeco+2.1+firmware+API+%28current%29
  */
 void printState(EthernetClient ec) {
-    char c = ' ';
-    ec.print(ASGECO);//1
-    ec.print(c);
-    ec.print(bitRead(PORTD,starterPin));//2
-    ec.print(c);
-    ec.print(bitRead(PORTD,onSolenoidPin), DEC) ;//3
-    ec.print(c);
-    ec.print(bitRead(PORTD,offSolenoidPin), DEC) ;//4
-    ec.print(c);
-    ec.print(bitRead(PORTB,mains1RelayPin-8), DEC);//5
-    ec.print(c);
-    ec.print(getState(MANU_REQUEST));//6
-    ec.print(c);
-    ec.print(getBatt());//7
-    ec.print(c);
-    ec.print(readVcc());//8
-    ec.print(c);
-    ec.print(analogRead(starterCurrentPin)) ;//9
-    ec.print(c);
-    ec.print(getState(ENGINE));//10
-    ec.print(c);
-    ec.print(getState(WARMINGUP));//11
-    ec.print(c);
-    ec.print(getState(COOLINGDOWN));//12
-    ec.print(c);
-    ec.print(getState(WAITING));//13
-    ec.print(c);
-    ec.print(getMode());//14
-    ec.print(c);
-    ec.print(getState(FATAL));//15
-    ec.print(c);
-    ec.print(getState(AUTO_REQUEST));//16
-    ec.print(c);
-    ec.print(digitalRead(auxPin), DEC);//17
-    ec.print(c);
-    ec.print(getAttempts());//18
-    ec.print(c);
-    ec.print(getTotalRunSecs(),DEC);//19
-    ec.print(c);
-    if(getState(ENGINE))
-        ec.print((millis() - getEngineStartTime())/1000);//20
-    else
-        ec.print(0);
-    ec.print(c);
-    ec.print(getGENON());//21
-    ec.print(c);
-    ec.print(getGENOFF());//22
-    ec.print(c);
-    ec.print(getState(VALVE));//23
-    ec.print(c);
-    ec.print(0);//24
-    ec.print(c);
-    ec.print(getVconv());//25
-    ec.print(c);
-    ec.print(getOil());//26
-    ec.print(c);
-    ec.print(getWarmUpSeconds());//27
-    ec.print(c);
-    ec.print(getCoolDownSeconds());//28
-    ec.print(c);
-    ec.print(getMinimumRunMinutes());//29
-    ec.print(c);
-    ec.print(getState(OFF_LOCK));//30
-    ec.print(c); // this last space is necessary.
+    char outstring[120] = "";
+    snprintf(outstring, sizeof(outstring),
+             "%s %i %i %i %i %i %i %i %i %i %i %i %i %i %i %i %i %i %lu %i %i %i %i %i %i %i %i %i %i %i %i %i ",
+             ASGECO,                            //1
+             bitRead(PORTD,starterPin),         //2
+             bitRead(PORTD,onSolenoidPin),      //3
+             bitRead(PORTD,offSolenoidPin),     //4
+             bitRead(PORTB,mains1RelayPin-8),   //5
+             getState(MANU_REQUEST),            //6
+             getBatt(),                         //7
+             (int) readVcc(),                   //8
+             analogRead(starterCurrentPin),     //9
+             getState(ENGINE),                  //10
+             getState(WARMINGUP),               //11
+             getState(COOLINGDOWN),             //12
+             getState(WAITING),                 //13
+             getMode(),                         //14
+             getState(FATAL),                   //15
+             getState(AUTO_REQUEST),            //16
+             digitalRead(auxPin),               //17
+             getAttempts(),                     //18
+             getTotalRunSecs(),                 //19
+             getCurrentRunningSeconds(),        //20
+             getGENON(),                        //21
+             getGENOFF(),                       //22
+             getState(VALVE),                   //23
+             0,                                 //24
+             getVconv(),                        //25
+             getOil(),                          //26
+             getWarmUpSeconds(),                //27
+             getCoolDownSeconds(),              //28
+             getMinimumRunMinutes(),            //29
+             getState(OFF_LOCK),                //30
+             0,                                 //31
+             (int) getErrorCode()               //32
+             );
+    ec.print(outstring);
 }
 
 void HTTPserver() {
@@ -263,9 +263,15 @@ void writeStates(char clientline[]){
                 break;
             case API_MINIMUMRUNTIME:
                 pch = strtok (NULL, FS);
-//                logg("web:MINRUNTIME=" + String(atoi(pch)));
+                //                logg("web:MINRUNTIME=" + String(atoi(pch)));
                 setMinimumRunMinutes(atoi(pch));
-//                logg("web:MINRUNTIME=" + String(getMinimumRunMinutes()) + " set");
+                //                logg("web:MINRUNTIME=" + String(getMinimumRunMinutes()) + " set");
+                break;
+            case API_REBOOT:
+                pch = strtok (NULL, FS);
+                wdt_disable();
+                wdt_enable(WDTO_2S);
+                while (1);
                 break;
         }
         pch = strtok (NULL, FS);

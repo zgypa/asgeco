@@ -291,24 +291,28 @@ void setGENOFF(int g){
     EEPROM_writeAnything(EEPROM_GENOFF, g);
 }
 
+int getCurrentRunningSeconds(){
+    if(getState(ENGINE))
+        return ((millis() - getEngineStartTime())/1000);
+    else
+        return 0;
+
+}
 
 /*
  open and close fuelvalve functions are not responsible for checking the state of the microswitch.
  This should be done making use of states.
  */
 void openFuelValve(){
-//    logg("Opening valve");
     digitalWrite(onSolenoidPin, HIGH);
-    delay(200);
+    delay(VALVE_OPEN_DELAY);
     digitalWrite(onSolenoidPin, LOW);
 }
 
 void closeFuelValve(){
-//    logg("Closing valve");
     digitalWrite(offSolenoidPin, HIGH);
-    delay(300);
+    delay(VALVE_CLOSE_DELAY);
     digitalWrite(offSolenoidPin, LOW);
-//    logg("Valve 0");
 }
 
 /*
@@ -326,6 +330,12 @@ byte getAux(){
     byte oldPS = getState(AUX_STATE);
     
     if (oldPS == 1 && currentPS == 0) {
+        unsigned long start = millis();
+        while (millis() - start < AUX_BUFFER_TIME)  {
+            if (getInputPin(auxPin) != currentPS) {
+                return 0;
+            }
+        }
         setState(AUX_STATE, currentPS);
         return 1;
     }
@@ -333,7 +343,6 @@ byte getAux(){
         setState(AUX_STATE, currentPS);
         return 0;
     }
-    
 }
 
 unsigned long engineRunTimeMilliseconds(){
@@ -850,10 +859,17 @@ void Generator(){
     } else if (isState11()){
         // There has been a valid manual request to start
         logg("S11");
-        setValve(OPEN);
+        if (getAttempts() < 3){
+            setValve(OPEN);
+            increaseAttempts();
+        } else {
+            setState(FATAL, ON);
+            setErrorCode(ERROR_VALVE_NOT_OPENING);
+        }
 
     } else if (isState12()){
         logg("S12");
+        setAttempts((byte) 0); // Valve open, so reset attampts
         setStarter(ON);
         setWaiting(ON);
         delay(300); // give time for the system to draw current.
@@ -882,7 +898,10 @@ void Generator(){
             increaseAttempts();
             snprintf(logstring, sizeof(logstring), "%s %b","TO:",getAttempts());
             logg(logstring);
-            if (getAttempts() >= 3) setState(FATAL, ON);
+            if (getAttempts() >= 3) {
+                setState(FATAL, ON);
+                setErrorCode(ERROR_ENGINE_NOT_STARTING);
+            }
         }
     } else if (isState130()){
         logg("S130");

@@ -1919,6 +1919,10 @@
 		908F50E916C7A8DE00AC4C1C /* GeneratorLibrary.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GeneratorLibrary.h; sourceTree = "<group>"; };
 		908F50EC16C7B2FB00AC4C1C /* Asgeco2API.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Asgeco2API.cpp; sourceTree = "<group>"; };
 		908F50ED16C7B2FC00AC4C1C /* Asgeco2API.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Asgeco2API.h; sourceTree = "<group>"; };
+		90B273D91805BEB500E5DD8B /* TFTP Bootloader ATMega328.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = "TFTP Bootloader ATMega328.xcconfig"; sourceTree = "<group>"; };
+		90B273E21805C46B00E5DD8B /* boards.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = boards.txt; sourceTree = "<group>"; };
+		90B273E51805C46B00E5DD8B /* arduino-tftpboot-bootloader-m328.hex */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "arduino-tftpboot-bootloader-m328.hex"; sourceTree = "<group>"; };
+		90B273E81805C86800E5DD8B /* Arduino-TFTP.mk */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; name = "Arduino-TFTP.mk"; path = "Makefiles/Arduino-TFTP.mk"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -1954,6 +1958,7 @@
 				9079F05616D880CD0049943E /* asgeco2.sh */,
 				9053689D16C6C1700050744E /* Sketchbook */,
 				9053689F16C6C1700050744E /* Arduino */,
+				90B273E01805C46B00E5DD8B /* hardware */,
 				90536A5B16C6C1710050744E /* Energia */,
 				90536B5B16C6C1720050744E /* MapleIDE */,
 				90536C2216C6C1720050744E /* Mpide */,
@@ -4107,6 +4112,7 @@
 				90536E8516C6C1740050744E /* Teensy 2.0.xcconfig */,
 				90536E8616C6C1740050744E /* Teensy 3.0.xcconfig */,
 				90536E8716C6C1740050744E /* Wiring S.xcconfig */,
+				90B273D91805BEB500E5DD8B /* TFTP Bootloader ATMega328.xcconfig */,
 			);
 			name = Config;
 			sourceTree = "<group>";
@@ -4131,6 +4137,7 @@
 				90536E9716C6C1740050744E /* Teensy3.mk */,
 				90536E9816C6C1740050744E /* Avrdude.mk */,
 				90536E9916C6C1740050744E /* Doxygen.mk */,
+				90B273E81805C86800E5DD8B /* Arduino-TFTP.mk */,
 			);
 			name = Makefiles;
 			sourceTree = "<group>";
@@ -4204,6 +4211,39 @@
 				90536ED916C6C2360050744E /* SyslogClient.pde */,
 			);
 			path = SyslogClient;
+			sourceTree = "<group>";
+		};
+		90B273E01805C46B00E5DD8B /* hardware */ = {
+			isa = PBXGroup;
+			children = (
+				90B273E11805C46B00E5DD8B /* arduino-tftpboot */,
+			);
+			path = hardware;
+			sourceTree = "<group>";
+		};
+		90B273E11805C46B00E5DD8B /* arduino-tftpboot */ = {
+			isa = PBXGroup;
+			children = (
+				90B273E21805C46B00E5DD8B /* boards.txt */,
+				90B273E31805C46B00E5DD8B /* bootloaders */,
+			);
+			path = "arduino-tftpboot";
+			sourceTree = "<group>";
+		};
+		90B273E31805C46B00E5DD8B /* bootloaders */ = {
+			isa = PBXGroup;
+			children = (
+				90B273E41805C46B00E5DD8B /* arduino-tftpboot */,
+			);
+			path = bootloaders;
+			sourceTree = "<group>";
+		};
+		90B273E41805C46B00E5DD8B /* arduino-tftpboot */ = {
+			isa = PBXGroup;
+			children = (
+				90B273E51805C46B00E5DD8B /* arduino-tftpboot-bootloader-m328.hex */,
+			);
+			path = "arduino-tftpboot";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -5353,11 +5393,10 @@
 /* Begin XCBuildConfiguration section */
 		90536EAA16C6C1740050744E /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 90553AD316C6D5E60029F3F1 /* Arduino Duemilanove ATmega328.xcconfig */;
+			baseConfigurationReference = 90536E7A16C6C1740050744E /* Arduino Uno.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ARCHS = "$(NATIVE_ARCH_ACTUAL)";
-				BOARD_TAG = uno;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_WARN_EMPTY_BODY = YES;
@@ -5383,11 +5422,10 @@
 		};
 		90536EAB16C6C1740050744E /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 90553AD316C6D5E60029F3F1 /* Arduino Duemilanove ATmega328.xcconfig */;
+			baseConfigurationReference = 90536E7A16C6C1740050744E /* Arduino Uno.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ARCHS = "$(NATIVE_ARCH_ACTUAL)";
-				BOARD_TAG = uno;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_WARN_EMPTY_BODY = YES;

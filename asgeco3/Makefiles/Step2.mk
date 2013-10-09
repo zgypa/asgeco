@@ -709,6 +709,8 @@ else ifeq ($(UPLOADER),teensy_flash)
 		$(call TRACE,"9-UPLOAD",$(UPLOADER))
 		$(TEENSY_POST_COMPILE) -file=$(basename $(notdir $(TARGET_HEX))) -path=$(dir $(abspath $(TARGET_HEX))) -tools=$(abspath $(TEENSY_FLASH_PATH))/
 		$(TEENSY_REBOOT)
+else ifeq ($(UPLOADER),tftp)
+		$(call SHOW,"9.7-UPLOAD",$(UPLOADER))
 else
 		$(error No valid uploader)
 endif
