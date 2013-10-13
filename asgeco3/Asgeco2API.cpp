@@ -228,7 +228,7 @@ void writeStates(char clientline[]){
             case API_SECS_TOT:
                 pch = strtok (NULL, FS);
 //                logg("web:SECS_TOT=" + String(atoi(pch)));
-                setTotalRunSecs(long(atoi(pch)));
+                setTotalRunSecs(atol(pch));
 //                logg("web:SECS_TOT=" + String(getTotalRunSecs()) + " set");
                 break;
             case API_GENON:

@@ -46,7 +46,7 @@
 #define batteryBankPin     A2
 #define generatorOnPin     A3
 #define oilSensorPin       A4
-//#define relayCH2Pin        A5 //unused
+//#define relayCH7pin      A5 //unused
 
 /*
  Engine State bits

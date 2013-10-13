@@ -19,6 +19,7 @@ function printHelp() {
         echo "                              (Automatic is PV voltage based)"
         echo "-n, --GENON=<mV>          specify threshold for turning on generator in mV"
         echo "-r, --minruntime=<mins>   specify minimum running time in minutes"
+        echo "-t, --totruntime=<secs>   restore totalruntime counter (seconds)"
         echo "-u, --WARMINGUP=<secs>    specify warm up time, before activating load"
         echo "-v, --VCONV=factor        specify conversion factor to calibrate proper BATT mV"
         echo " "
@@ -27,6 +28,7 @@ function printHelp() {
         echo "start                     start generator"
         echo "stop                      stop generator"
         echo "choke                     close fuel valve"
+        echo "open                      open fuel valve"
         echo "restart                   reboot asgeco"
 }
 
@@ -61,6 +63,11 @@ while test $# -gt 0; do
                         export MINIMUMRUNTIME=$1
                         shift
                         ;;
+                -t|--totruntime)
+                        shift
+                        export NEW_SECS_TOT=$1
+                        shift
+                        ;;
                 -u|--WARMINGUP)
                         shift
                         export NEW_WARMINGUP=$1
@@ -76,7 +83,7 @@ while test $# -gt 0; do
                         export NEW_MODE=$1
                         shift
                         ;;
-                up|start|stop|choke|restart)
+                up|start|stop|choke|open|restart)
                         export ACTION=$1
                         shift
                         ;;
@@ -187,6 +194,12 @@ function status() {
 
 URL="http://${ARDUINO_IP}/?ASGECOv2"
 
+
+
+if [ "${NEW_SECS_TOT}" != "" ]; then
+    URL="${URL}&19=${NEW_SECS_TOT}"
+fi
+
 if [ "${NEW_WARMINGUP}" != "" ]; then
     URL="${URL}&27=${NEW_WARMINGUP}"
 fi
@@ -232,6 +245,11 @@ function choke(){
     curl "http://${ARDUINO_IP}/?ASGECOv2&4=0"
 }
 
+function open(){
+    curl "http://${ARDUINO_IP}/?ASGECOv2&3=1"
+    curl "http://${ARDUINO_IP}/?ASGECOv2&3=0"
+}
+
 function systemReboot(){
     curl "http://${ARDUINO_IP}/?ASGECOv2&31=1"
 }
@@ -250,6 +268,7 @@ if [ "$ACTION" == "up" ]; then upload;
 elif [ "$ACTION" == "start" ]; then start;
 elif [ "$ACTION" == "stop" ]; then stop;
 elif [ "$ACTION" == "choke" ]; then choke;
+elif [ "$ACTION" == "open" ]; then open;
 elif [ "$ACTION" == "restart" ]; then systemReboot;
 else status;
 fi;
