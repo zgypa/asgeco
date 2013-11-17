@@ -75,7 +75,7 @@ void setUpAPI(){
 void printState(EthernetClient ec) {
     char outstring[120] = "";
     snprintf(outstring, sizeof(outstring),
-             "%s %i %i %i %i %i %i %i %i %i %i %i %i %i %i %i %i %i %lu %i %i %i %i %i %i %i %i %i %i %i %i %i ",
+             "%s %i %i %i %i %i %i %i %i %i %i %i %i %i %i %i %i %i %lu %i %i %i %i %i %i %i %i %i %i %i %i %i %i ",
              ASGECO,                            //1
              bitRead(PORTD,starterPin),         //2
              bitRead(PORTD,onSolenoidPin),      //3
@@ -107,7 +107,8 @@ void printState(EthernetClient ec) {
              getMinimumRunMinutes(),            //29
              getState(OFF_LOCK),                //30
              0,                                 //31
-             (int) getErrorCode()               //32
+             (int) getErrorCode(),              //32
+             getState()
              );
     ec.print(outstring);
 }

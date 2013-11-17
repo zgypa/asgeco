@@ -119,6 +119,8 @@
 #define VALVE_CLOSE_DELAY       200     // how many ms to give current to solenoid
 #define AUX_BUFFER_TIME         200     // in ms how long to press aux to count it as valid
 
+unsigned int getState();
+
 boolean getState(byte b);
 void setState(byte b, byte s);
 

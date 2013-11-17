@@ -89,6 +89,9 @@ int initialCurrent          = 0;
 //    byte fatal       : 1;
 //} EngineState;
 
+unsigned int getState(){
+    return engineState;
+}
 
 /*
  Read a single bit from engineState, to find out what the state of 

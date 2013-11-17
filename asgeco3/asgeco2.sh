@@ -142,6 +142,7 @@ function status() {
     MINIMUMRUNTIME=$(echo $STRING | awk '{print $29}')
     OFF_LOCK=$(echo $STRING | awk '{print $30}')
     ERROR=$(echo $STRING | awk '{print $32}')
+    STATE=$(echo $STRING | awk '{print $33}')
 
     echo "STARTER (1/0): ........${STARTER}"
     echo "ONSOLENOID (1/0): .....${ONSOLENOID}"
@@ -170,6 +171,7 @@ function status() {
     echo "Min. Run Time (mins):..${MINIMUMRUNTIME}"
     echo "Fatal error: ..........${FATAL}"
     echo "Error code:............${ERROR}"
+    echo "Engine State:..........${STATE}"
     echo "Engine now on for ${SECS} seconds. Total for $[ ${SECS_TOT} / 60 ] mins."
 
     let $SECS;
