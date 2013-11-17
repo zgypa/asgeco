@@ -12,6 +12,7 @@ function printHelp() {
         echo " "
         echo "options:"
         echo "-h, --help                show brief help"
+        echo "-a, --MAINS=0|1           turn mains on or off"
         echo "-d, --COOLINGDOWN=<secs>  specify cool down time, before deactivating load"
         echo "-f, --GENOFF=<mV>         specify threshold for turning off generator in mV"
         echo "-i, --ipaddress=<IP>      specify IP address of arduino"
@@ -76,6 +77,11 @@ while test $# -gt 0; do
                 -d|--COOLINGDOWN)
                         shift
                         export NEW_COOLINGDOWN=$1
+                        shift
+                        ;;
+                -a|--MAINS)
+                        shift
+                        export NEW_MAINS=$1
                         shift
                         ;;
                 -m|--MODE)
@@ -226,6 +232,10 @@ fi
 
 if [ "${NEW_MODE}" != "" ]; then
     URL="${URL}&14=${NEW_MODE}"
+fi
+
+if [ "${NEW_MAINS}" != "" ]; then
+    URL="${URL}&5=${NEW_MAINS}"
 fi
 
 function updateSettings(){

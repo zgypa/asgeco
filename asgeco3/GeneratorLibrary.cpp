@@ -17,6 +17,46 @@
 // See GeneratorLibrary.h and ReadMe.txt for references
 //
 
+/*
+
+ Contains the entire code to run the generator. Functions which deal with opening 
+ and closing the valve, controlling the mains, measuring starter consumption is all here.
+ 
+ This is a state machine. Each state has a getter function called "isStateX()" where 
+ X is the state number. See&nbsp;[CIAP:Asgeco State Diagram].
+ 
+ The main function here is Generator().
+
+ 
+ == OFF_LOCK and EEPROM_MINIMUMRUNTIME ==
+ 
+ OFF_LOCK is a binary variable stored in the engineState 16 bit (int) bitfield. 
+ It is a protection mechanism to make sure the engine doesn't run for short periods of time,
+ when in AUTO mode. Cycles where the engine would run like 5 or 10 minutes then be off for 
+ 10 or 15 minutes and then on again happened in the past, due to the charging current of 
+ the batteries set too high, and/or the batteries being to old. With OFF_LOCK, i wanted to
+ make sure that if the engine started automatically, it would stay on for a reasonable amount
+ of time. After all, it's a Diesel engine, which works best when warm and when running for 
+ longer periods.
+ 
+ EEPROM_MINIMUMRUNTIME is the address in EEPROM where shortest amount of time the engine
+ should be running (in AUTO mode) is stored.
+
+ * OFF_LOCK is activated in State 15, only if the current mode is AUTO.
+ * OFF_LOCK is deactivated by setMode(MANUAL), make sure that it gets disabled when system
+   is switched to manual mode.
+ * updateStates() checks the OFF_LOCK to decide whether to disable AUTO_REQUEST or not. Usually
+   the AUTO_REQUEST is disabled when the batteries reach the threshold charged voltage. 
+   However, if the system is in AUTO mode, both this voltage has to be reached and the 
+   OFF_LOCK has to be unset in order to fire a proper request to shut down engine.
+ * updateStates() checks to see if the time the engine has been running is greater than the
+   EEPROM_MINIMUMRUNTIME value. If it is, then it's time to unlock. This test is however only 
+   done, when the lock is active. Initially i had this test actually measure the amount of time
+   the mains have been by subtracting the engineRunTimeSeconds() from getWarmUpSeconds(). But 
+   this really isn't always the correct mains on time. Besides, the mains on time doesn't 
+   matter, as this system it to save the engine, and has nothing to do with the electrical 
+   side.
+ */
 
 // Library header
 #include "GeneratorLibrary.h"
@@ -122,8 +162,6 @@ byte getMains(){
 void setMains(byte i){
     digitalWrite(mains1RelayPin, i);
 //    logg("MAINS " + String(i));
-    if (getState(MODE) == AUTO)
-        setState(OFF_LOCK, ON); // lock shutdown if we are in automode.
 }
 
 /*
@@ -345,8 +383,8 @@ byte getAux(){
     }
 }
 
-unsigned long engineRunTimeMilliseconds(){
-    return millis() - engineStartTime;
+unsigned int engineRunTimeSeconds(){
+    return (millis() - engineStartTime)/1000;
 }
 
 /*
@@ -426,7 +464,7 @@ void setUpPinMode(){
  Returns amount logged this time.
  */
 unsigned long logOnTime(){
-    unsigned long logthis = (getTotalRunSecs() + (engineRunTimeMilliseconds())/1000);
+    unsigned long logthis = (getTotalRunSecs() + (engineRunTimeSeconds()));
     EEPROM_writeAnything(EEPROM_TOTALRUNTIME, logthis);
     unsigned long ee;
     EEPROM_readAnything(EEPROM_TOTALRUNTIME, ee);
@@ -551,11 +589,12 @@ void updateStates(){
     
     /*
      Unsets the OFF_LOCK when mains_on_time > the minimum_run_time.
-     
+     Only test if OFF_LOCK is set.
      Conversion from ms to secs, then to minutes.
      */
-    if ((engineRunTimeMilliseconds()/1000 - getWarmUpSeconds())/60 > getMinimumRunMinutes())
-        setState(OFF_LOCK, OFF);
+    if ( (getState(OFF_LOCK) == ON) &&
+         (engineRunTimeSeconds()) / 60 > getMinimumRunMinutes())
+           setState(OFF_LOCK, OFF);
     
 }
 
@@ -887,14 +926,16 @@ void Generator(){
 //        logg(String(initialCurrent - readCurrent()));
         logg(logstring);
         if (initialCurrent - readCurrent() > CURRENT_THRESHOLD) {
+            // all good
             logg("Drop");
             setStarter(OFF);
             setAttempts(0);
         } else if (millis() - waitStartTime > STARTER_TIMEOUT ) {
+            // failure to start
             logg("Timeout");
             setStarter(OFF);
             setWaiting(OFF);
-            setWaiting(ON); // reset waiting timer for S52
+            setWaiting(ON); // reset waiting timer for another attempt (S52)
             increaseAttempts();
             snprintf(logstring, sizeof(logstring), "%s %b","TO:",getAttempts());
             logg(logstring);
@@ -923,6 +964,9 @@ void Generator(){
         // engineStartTime is set automatically by updateStatus.
         setWaiting(OFF);
         setState(WARMINGUP, ON);
+        if (getState(MODE) == AUTO)
+            setState(OFF_LOCK, ON); // lock shutdown if we are in automode.
+
 
     } else if (isState150()){
         logg("S150");
@@ -1029,5 +1073,12 @@ void Generator(){
     } else {
         snprintf(logstring, sizeof(logstring), "%s%X","UNK:0x",engineState);
         logg(logstring);
+        // If we are here, it's because some state is not caught, so we are in
+        // an unstable situation. In this case, it's imperative to shutdown engine.
+        setMains(OFF);
+        setState(COOLINGDOWN, OFF);
+        setState(WARMINGUP, OFF);
+        setValve(CLOSE);
+        delay(5000); // give engine time to spin down, just in case code wants to start it again.
     }
 }
