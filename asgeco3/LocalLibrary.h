@@ -116,6 +116,8 @@
 #define ERROR_LOW_FUEL                          111
 #define ERROR_TOO_MUCH_FUEL                     112
 
+// 200-255 software errors
+#define ERROR_UNKOWN_STATE                      201
 
 /// @brief	Log a string
 /// @details	The passed string is logged

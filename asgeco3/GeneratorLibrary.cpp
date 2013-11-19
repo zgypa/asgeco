@@ -894,7 +894,10 @@ byte isState90(){
 
 void Generator(){
 
-    if (isState10()) {
+    if (isState90()){
+        logg("FATAL");
+        
+    } else if (isState10()) {
         logg("S10");
         // do nothing, just wait for state to change
 
@@ -1070,10 +1073,9 @@ void Generator(){
             setWaiting(OFF); //this should throw us back to state 12.
         }
 
-    } else if (isState90()){
-        logg("FATAL");
-        
     } else {
+        setState(FATAL, ON);
+        setErrorCode(ERROR_UNKOWN_STATE);
         snprintf(logstring, sizeof(logstring), "%s%X","UNK:0x",engineState);
         logg(logstring);
         // If we are here, it's because some state is not caught, so we are in

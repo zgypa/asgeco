@@ -75,7 +75,7 @@ void setUpAPI(){
 void printState(EthernetClient ec) {
     char outstring[120] = "";
     snprintf(outstring, sizeof(outstring),
-             "%s %i %i %i %i %i %i %i %i %i %i %i %i %i %i %i %i %i %lu %i %i %i %i %i %i %i %i %i %i %i %i %i %i ",
+             "%s %i %i %i %i %i %i %i %i %i %i %i %i %i %i %i %i %i %lu %i %i %i %i %i %i %i %i %i %i %i %i %i %u ",
              ASGECO,                            //1
              bitRead(PORTD,starterPin),         //2
              bitRead(PORTD,onSolenoidPin),      //3

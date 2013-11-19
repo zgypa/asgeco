@@ -76,7 +76,7 @@ void setUpEthernet(){
 // Add setup code 
 void setup() {
     delay(1000);
-    wdt_enable (WDTO_8S);  // reset after 8 second, if no "pat the dog" received
+    wdt_enable(WDTO_8S);  // reset after 8 second, if no "pat the dog" received
     Serial.begin(9600);
     if (digitalRead(ethernetLinkPin) == UP){
         setUpEthernet();

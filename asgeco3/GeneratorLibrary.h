@@ -95,8 +95,8 @@
 #define ES_WAIT_COOL            0x4004
 
 #define ES_NOTIMEOUT_MASK       0xFFE7 //use this to filter out timeouts
-#define ES_NOTO_CTRL_MASK       0xFE07 //use this to filter out both timeouts and CTRL
-#define ES_NO_CTRL_MASK         0xFE1F //use this to filter out CTRLs
+#define ES_NOTO_CTRL_MASK       0xFC07 //use this to filter out both timeouts and CTRL
+#define ES_NO_CTRL_MASK         0xFC1F //use this to filter out CTRLs
 
 
 // EEPROM. First 21 bytes (0-20) used for TFTP Ethernet settings.
