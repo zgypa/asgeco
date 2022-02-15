@@ -1,5 +1,10 @@
 #!/bin/bash
-
+#
+# Script to control generator from CLI.
+#
+# Will interface with the generator's proprietary http API to change the state
+# and control the device in runtime.
+#
 package=asgeco2
 
 # Default arduino IP.
