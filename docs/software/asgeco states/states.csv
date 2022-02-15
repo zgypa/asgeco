@@ -1,0 +1,11 @@
+,,
+11,Wating for batteries to be low,
+12,"Batteries are low, engine still off.",
+13,Valve open,
+14,"Starter on, start time recorded, waiting for drop",
+15,"Starter off, Engine on, time recorded, warming up.",
+16,"Engine on, mains on.",
+17,"Batterie charged enough, engine still on.",
+18,"Mains off, cooling down, time recorded",next state is 11
+19,,
+20,,
